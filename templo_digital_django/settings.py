@@ -26,9 +26,8 @@ SECRET_KEY = 'django-insecure-f07olffi-9n4pxcq24g^fa3tv838w+9)^9$3ktbdmxov1)@-i=
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-TESTING = "test" in sys.argv
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1']
 
 
 # Application definition
@@ -156,10 +155,3 @@ AUTH_USER_MODEL = 'usuarios.CustomUser'
 LOGIN_URL = 'usuarios:login'
 LOGIN_REDIRECT_URL = 'dashboard:index'
 LOGOUT_REDIRECT_URL = 'usuarios:login'
-
-ENABLE_DEBUG_TOOLBAR = DEBUG and not TESTING
-if ENABLE_DEBUG_TOOLBAR:
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
-    # Customize the config to support turbo and htmx boosting.
-    DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent hx-preserve"}

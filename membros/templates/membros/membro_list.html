@@ -12,7 +12,7 @@
         <div class="relative">
             <input type="text" name="q" placeholder="Buscar pessoa..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" value="{{ request.GET.q }}">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                {% include "theme/icons/search.svg" with class="h-5 w-5 text-gray-400" %}
+                {% include "icons/search.html" with class="h-5 w-5 text-gray-400" %}
             </div>
         </div>
         {# Botão de Filtro (funcionalidade a implementar) #}
@@ -26,7 +26,7 @@
     
     {# Botão Nova Pessoa #}
     <a href="{% url 'membros:membro_add' %}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 flex items-center justify-center md:justify-start">
-        {% include 'theme/icons/people.svg' with class="h-5 w-5 mr-2" %} <!-- Ajustar ícone se necessário -->
+        {% include 'icons/people.html' with class="h-5 w-5 mr-2" %} <!-- Ajustar ícone se necessário -->
         Nova Pessoa
     </a>
 </div>
