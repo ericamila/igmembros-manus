@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from igrejas.models import Church
 
 class Member(models.Model):
@@ -10,7 +10,7 @@ class Member(models.Model):
         # Adicionar outros tipos conforme necessário
     ]
 
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuário do Sistema")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuário do Sistema")
     name = models.CharField(max_length=255, verbose_name="Nome Completo")
     address = models.TextField(blank=True, null=True, verbose_name="Endereço")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone")
@@ -29,4 +29,3 @@ class Member(models.Model):
         verbose_name = "Membro"
         verbose_name_plural = "Membros"
         ordering = ["name"]
-

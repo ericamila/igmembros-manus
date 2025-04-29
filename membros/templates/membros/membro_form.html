@@ -1,0 +1,115 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} - Templo Digital{% endblock %}
+
+{% block page_title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    {# Adicionar enctype para upload de arquivos #}
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {# Renderiza campos individualmente para melhor controle do layout se necessário #}
+            {# Exemplo: Coluna 1 #}
+            <div class="space-y-6">
+                <div>
+                    <label for="{{ form.nome.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.nome.label }}</label>
+                    {{ form.nome }}
+                    {% for error in form.nome.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    <label for="{{ form.data_nascimento.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.data_nascimento.label }}</label>
+                    {{ form.data_nascimento }}
+                    {% for error in form.data_nascimento.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.sexo.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.sexo.label }}</label>
+                    {{ form.sexo }}
+                    {% for error in form.sexo.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.estado_civil.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.estado_civil.label }}</label>
+                    {{ form.estado_civil }}
+                    {% for error in form.estado_civil.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.telefone.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.telefone.label }}</label>
+                    {{ form.telefone }}
+                    {% for error in form.telefone.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.endereco.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.endereco.label }}</label>
+                    {{ form.endereco }}
+                    {% for error in form.endereco.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            {# Exemplo: Coluna 2 #}
+            <div class="space-y-6">
+                 <div>
+                    <label for="{{ form.data_batismo.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.data_batismo.label }}</label>
+                    {{ form.data_batismo }}
+                    {% for error in form.data_batismo.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.data_ingresso.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.data_ingresso.label }}</label>
+                    {{ form.data_ingresso }}
+                    {% for error in form.data_ingresso.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.igreja_origem.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.igreja_origem.label }}</label>
+                    {{ form.igreja_origem }}
+                    {% for error in form.igreja_origem.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.cargo.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.cargo.label }}</label>
+                    {{ form.cargo }}
+                    {% for error in form.cargo.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.status.label }}</label>
+                    {{ form.status }}
+                    {% for error in form.status.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.igreja.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.igreja.label }}</label>
+                    {{ form.igreja }}
+                    {% for error in form.igreja.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.foto.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.foto.label }}</label>
+                    {{ form.foto }}
+                    {% if form.foto.value %}
+                        <p class="mt-2 text-sm text-gray-500">Atual: <a href="{{ form.foto.value.url }}" target="_blank" class="text-purple-600 hover:underline">{{ form.foto.value.name|truncatechars:30 }}</a></p>
+                    {% endif %}
+                    {% for error in form.foto.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                 <div>
+                    <label for="{{ form.observacoes.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.observacoes.label }}</label>
+                    {{ form.observacoes }}
+                    {% for error in form.observacoes.errors %}<p class="mt-2 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {# Botões de Ação #}
+        <div class="mt-8 flex justify-end space-x-3 border-t border-gray-200 pt-6">
+            <a href="{% if object %}{% url 'membros:membro_detail' object.pk %}{% else %}{% url 'membros:membro_list' %}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                Cancelar
+            </a>
+            <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                {{ texto_botao }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

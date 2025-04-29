@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Entradas Financeiras{% endblock %}
+{% block page_title %}Entradas Financeiras{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <a href="{% url 'financas:entrada_create' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+            Nova Entrada
+        </a>
+        <a href="{% url 'financas:saida_list' %}" class="ml-2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+            Ver Saídas
+        </a>
+        <a href="{% url 'financas:categoria_list' %}" class="ml-2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+            Categorias
+        </a>
+        <a href="{% url 'financas:relatorio_financeiro' %}" class="ml-2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+            Relatório
+        </a>
+    </div>
+    <div class="text-right">
+        <p class="text-sm text-gray-500">Saldo Atual</p>
+        <p class="text-2xl font-bold {% if saldo >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+            R$ {{ saldo|floatformat:2|intcomma }}
+        </p>
+    </div>
+</div>
+
+{% if messages %}
+<div class="mb-4">
+    {% for message in messages %}
+    <div class="p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %} rounded">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Resumo Financeiro -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+        <p class="text-sm text-gray-500 mb-1">Total de Entradas</p>
+        <p class="text-2xl font-bold text-green-600">R$ {{ total_entradas|floatformat:2|intcomma }}</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+        <p class="text-sm text-gray-500 mb-1">Total de Saídas</p>
+        <p class="text-2xl font-bold text-red-600">R$ {{ total_saidas|floatformat:2|intcomma }}</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+        <p class="text-sm text-gray-500 mb-1">Entradas do Mês</p>
+        <p class="text-2xl font-bold text-blue-600">R$ {{ total_mes|floatformat:2|intcomma }}</p>
+    </div>
+</div>
+
+<!-- Lista de Entradas -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="p-4 bg-gray-50 border-b">
+        <h2 class="text-lg font-semibold text-gray-700">Entradas Financeiras</h2>
+    </div>
+    
+    {% if entradas %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Igreja</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for entrada in entradas %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ entrada.data|date:"d/m/Y" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium text-green-600">R$ {{ entrada.valor|floatformat:2|intcomma }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ entrada.descricao }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ entrada.categoria.nome }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ entrada.igreja.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{% url 'financas:entrada_detail' entrada.pk %}" class="text-blue-600 hover:text-blue-900 mr-3">Detalhes</a>
+                        <a href="{% url 'financas:entrada_update' entrada.pk %}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
+                        <a href="{% url 'financas:entrada_delete' entrada.pk %}" class="text-red-600 hover:text-red-900">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-6 text-center text-gray-500">
+        Nenhuma entrada financeira registrada. <a href="{% url 'financas:entrada_create' %}" class="text-purple-600 hover:text-purple-900">Registrar nova entrada</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

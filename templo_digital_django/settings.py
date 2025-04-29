@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,6 +26,7 @@ SECRET_KEY = 'django-insecure-f07olffi-9n4pxcq24g^fa3tv838w+9)^9$3ktbdmxov1)@-i=
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+TESTING = "test" in sys.argv
 
 ALLOWED_HOSTS = []
 
@@ -68,7 +71,7 @@ ROOT_URLCONF = 'templo_digital_django.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'America/Sao_Paulo'
+TIME_ZONE = 'America/Boa_Vista'
 
 USE_I18N = True
 
@@ -128,7 +131,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'theme/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'theme/static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (Uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -139,3 +149,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Tailwind CSS
 TAILWIND_APP_NAME = 'theme'
 
+# Configuração de autenticação personalizada
+AUTH_USER_MODEL = 'usuarios.CustomUser'
+
+# Configurações de login e redirecionamento
+LOGIN_URL = 'usuarios:login'
+LOGIN_REDIRECT_URL = 'dashboard:index'
+LOGOUT_REDIRECT_URL = 'usuarios:login'
+
+ENABLE_DEBUG_TOOLBAR = DEBUG and not TESTING
+if ENABLE_DEBUG_TOOLBAR:
+    INSTALLED_APPS += ["debug_toolbar"]
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+    # Customize the config to support turbo and htmx boosting.
+    DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "data-turbo-permanent hx-preserve"}

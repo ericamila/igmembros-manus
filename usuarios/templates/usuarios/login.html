@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+        <div class="text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900">Templo Digital</h1>
+            <p class="mt-2 text-sm text-gray-600">Entre com suas credenciais para acessar o sistema</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            <p>Seu nome de usuário e senha não correspondem. Por favor, tente novamente.</p>
+        </div>
+        {% endif %}
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %} rounded-lg">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="mt-8 space-y-6" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="sr-only">Nome de usuário</label>
+                    {{ form.username }}
+                </div>
+                <div class="mt-4">
+                    <label for="{{ form.password.id_for_label }}" class="sr-only">Senha</label>
+                    {{ form.password }}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                        Lembrar-me
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="{% url 'usuarios:password_reset' %}" class="font-medium text-purple-600 hover:text-purple-500">
+                        Esqueceu sua senha?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    Entrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
