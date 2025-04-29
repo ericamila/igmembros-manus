@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Confirmar Exclusão - {{ entrada.description|truncatechars:30 }}{% endblock %}
+
+{% block page_title %}Confirmar Exclusão da Entrada{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Tem certeza que deseja excluir a entrada "{{ entrada.description }}"?</h2>
+    
+    <p class="text-gray-600 mb-6">Esta ação não pode ser desfeita. Todos os dados associados a esta entrada serão permanentemente removidos.</p>
+
+    <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
+        <p class="text-sm font-medium text-gray-700">Detalhes da Entrada:</p>
+        <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+            <li>Valor: R$ {{ entrada.value|intcomma }}</li>
+            <li>Data: {{ entrada.date|date:"d/m/Y" }}</li>
+            <li>Categoria: {{ entrada.category.name|default:"Sem categoria" }}</li>
+            <li>Membro: {{ entrada.member.name|default:"Não especificado" }}</li>
+        </ul>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex justify-end space-x-3 border-t border-gray-200 pt-6">
+            <a href="{% url 'financas:entrada_detail' entrada.pk %}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                Cancelar
+            </a>
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                Confirmar Exclusão
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
