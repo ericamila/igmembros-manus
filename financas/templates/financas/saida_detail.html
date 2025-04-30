@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Detalhes da Saída - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Detalhes da Saída</h1>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+            <strong class="block text-gray-700 text-sm font-bold mb-2">Descrição:</strong>
+            <p class="text-gray-700 text-base">{{ saida.description }}</p>
+        </div>
+        <div class="mb-4">
+            <strong class="block text-gray-700 text-sm font-bold mb-2">Valor:</strong>
+            <p class="text-gray-700 text-base">R$ {{ saida.amount|floatformat:2 }}</p>
+        </div>
+        <div class="mb-4">
+            <strong class="block text-gray-700 text-sm font-bold mb-2">Data:</strong>
+            <p class="text-gray-700 text-base">{{ saida.date|date:"d/m/Y" }}</p>
+        </div>
+        <div class="mb-6">
+            <strong class="block text-gray-700 text-sm font-bold mb-2">Categoria:</strong>
+            <p class="text-gray-700 text-base">{{ saida.category.name|default:"Sem Categoria" }}</p>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <a href="{% url 'financas:saida_list' %}" class="text-gray-600 hover:text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Voltar para Lista
+            </a>
+            <div>
+                <a href="{% url 'financas:saida_update' saida.pk %}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+                    Editar
+                </a>
+                <a href="{% url 'financas:saida_delete' saida.pk %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Excluir
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

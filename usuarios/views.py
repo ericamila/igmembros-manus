@@ -10,11 +10,27 @@ User = get_user_model()
 @login_required
 def profile(request):
     """
-    Exibe o perfil do usuário logado.
+    Exibe e permite a edição do perfil do usuário logado.
     """
+    user = request.user
+    if request.method == 'POST':
+        # Usar CustomUserChangeForm para editar o próprio perfil
+        # Passar request.user como instance
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Seu perfil foi atualizado com sucesso!')
+            return redirect('usuarios:profile') # Redireciona de volta para a página de perfil
+        else:
+            messages.error(request, 'Não foi possível atualizar seu perfil. Verifique os erros abaixo.')
+    else:
+        # Para GET, apenas exibe o formulário preenchido com os dados atuais
+        form = CustomUserChangeForm(instance=user)
+        
     return render(request, 'usuarios/profile.html', {
-        'user': request.user,
-        'active_menu': 'usuarios',
+        'form': form,
+        'user': user, # Passa o usuário para exibir informações adicionais se necessário
+        'active_menu': 'usuarios', # Ou talvez 'perfil'? Verificar consistência
     })
 
 @admin_required
@@ -99,3 +115,4 @@ def user_delete(request, pk):
         'user_obj': user,
         'active_menu': 'usuarios',
     })
+

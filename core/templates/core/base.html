@@ -1,5 +1,4 @@
-{% load static %}
-{% load tailwind_tags %}
+{% load static tailwind_tags %}
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -25,34 +24,34 @@
                     {% include 'icons/dashboard.html' %}
                     <span class="ml-3">Dashboard</span></a></li>
                 <li><a href="{% url 'igrejas:igreja_list' %}" class="flex items-center p-2 {% if active_menu == 'igrejas' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/church.html' %}
+                    {% include 'icons/igrejas.html' %}
                     <span class="ml-3">Igrejas</span></a></li>
                 <li><a href="{% url 'membros:membro_list' %}" class="flex items-center p-2 {% if active_menu == 'membros' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/people.html' %}
+                    {% include 'icons/membros.html' %}
                     <span class="ml-3">Membros</span></a></li>
                 <li><a href="{% url 'eventos:event_list' %}" class="flex items-center p-2 {% if active_menu == 'eventos' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/events.html' %}
+                    {% include 'icons/eventos.html' %}
                     <span class="ml-3">Eventos</span></a></li>
                 <li><a href="{% url 'financas:entrada_list' %}" class="flex items-center p-2 {% if active_menu == 'financas' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/finance.html' %}
+                    {% include 'icons/financas.html' %}
                     <span class="ml-3">Finanças</span></a></li>
                 <li><a href="{% url 'escola:school_class_list' %}" class="flex items-center p-2 {% if active_menu == 'escola' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/school.html' %}
+                    {% include 'icons/escola.html' %}
                     <span class="ml-3">Escola</span></a></li>
                 {% if user.role == 'admin' %}
                 <li><a href="{% url 'usuarios:user_list' %}" class="flex items-center p-2 {% if active_menu == 'usuarios' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/settings.html' %}
+                    {% include 'icons/usuarios.html' %}
                     <span class="ml-3">Usuários</span></a></li>
                 {% endif %}
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-700">
             <a href="{% url 'usuarios:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
-                {% include 'icons/user.html' %}
+                {% include 'icons/perfil.html' %}
                 <span class="ml-3">Meu Perfil</span>
             </a>
             <a href="{% url 'usuarios:logout' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                {% include 'icons/logout.html' %}
+                {% include 'icons/sair.html' %}
                 <span class="ml-3">Sair</span></a>
         </div>
     </aside>
@@ -69,14 +68,14 @@
                 <div class="relative">
                     <input type="text" placeholder="Pesquisar..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600">
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        {% include 'icons/pesquisar.html' %}
                     </span>
                 </div>
                 <button class="text-gray-500 hover:text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    {% include 'icons/atualizar.html' %}
                 </button>
                 <button class="text-gray-500 hover:text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                    {% include 'icons/notificacoes.html' %}
                 </button>
                 <div class="flex items-center space-x-2">
                     <span class="text-gray-700">{{ user.get_full_name|default:user.username }}</span>
@@ -106,3 +105,4 @@
 
 </body>
 </html>
+

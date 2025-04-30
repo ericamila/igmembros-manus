@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Perfil do Usuário{% endblock %}
+{% block title %}Meu Perfil{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-6">
@@ -20,67 +20,104 @@
     {% endif %}
 
     <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-        <div class="p-6">
+        <form method="post" enctype="multipart/form-data" class="p-6">
+            {% csrf_token %}
             <div class="flex flex-col md:flex-row">
-                <div class="md:w-1/3 mb-6 md:mb-0 md:pr-6">
+                <!-- Coluna da Imagem e Botão Alterar Senha -->
+                <div class="md:w-1/3 mb-6 md:mb-0 md:pr-6 flex flex-col items-center">
                     {% if user.profile_image %}
-                    <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="w-full h-auto rounded-lg shadow-md">
+                    <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="w-48 h-48 rounded-full shadow-md object-cover mb-4">
                     {% else %}
-                    <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <span class="text-gray-500 text-lg">Sem imagem de perfil</span>
+                    <div class="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center mb-4">
+                        <span class="text-gray-500 text-lg">Sem imagem</span>
                     </div>
                     {% endif %}
                     
-                    <div class="mt-4 flex justify-center">
-                        <a href="{% url 'usuarios:password_change' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                            Alterar Senha
-                        </a>
+                    <!-- Campo para upload de nova imagem (parte do form) -->
+                    <div class="mb-4 w-full">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.profile_image.id_for_label }}">
+                            {{ form.profile_image.label }}
+                        </label>
+                        {{ form.profile_image }}
+                        {% if form.profile_image.errors %}
+                            <p class="text-red-500 text-xs italic">{{ form.profile_image.errors|striptags }}</p>
+                        {% endif %}
                     </div>
+
+                    <a href="{% url 'usuarios:password_change' %}" class="mt-4 w-full text-center bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        Alterar Senha
+                    </a>
                 </div>
                 
+                <!-- Coluna do Formulário de Edição -->
                 <div class="md:w-2/3">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Informações Pessoais</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Editar Informações</h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {# Renderizar outros campos do formulário #}
+                    {% for field in form %}
+                        {% if field.name != 'profile_image' %} {# Já renderizamos a imagem acima #}
                         <div class="mb-4">
-                            <span class="block text-sm font-medium text-gray-500">Nome Completo</span>
-                            <span class="block text-lg">{{ user.get_full_name }}</span>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p class="text-red-500 text-xs italic">{{ error }}</p>
+                            {% endfor %}
                         </div>
-                        
-                        <div class="mb-4">
-                            <span class="block text-sm font-medium text-gray-500">Nome de Usuário</span>
-                            <span class="block text-lg">{{ user.username }}</span>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <span class="block text-sm font-medium text-gray-500">Email</span>
-                            <span class="block text-lg">{{ user.email }}</span>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <span class="block text-sm font-medium text-gray-500">Função</span>
-                            <span class="block text-lg">{{ user.get_role_display }}</span>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <span class="block text-sm font-medium text-gray-500">Telefone</span>
-                            <span class="block text-lg">{{ user.phone|default:"Não informado" }}</span>
-                        </div>
-                    </div>
+                        {% endif %}
+                    {% endfor %}
                     
-                    <div class="mb-4">
-                        <span class="block text-sm font-medium text-gray-500">Endereço</span>
-                        <span class="block text-lg">{{ user.address|default:"Não informado" }}</span>
-                    </div>
-                    
-                    <div class="mt-6">
-                        <a href="{% url 'usuarios:user_update' user.pk %}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                            Editar Perfil
-                        </a>
+                    <!-- Botão Salvar -->
+                    <div class="mt-6 flex justify-end">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Salvar Alterações
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+    // Adiciona classes do Tailwind aos campos do formulário
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        if (form) {
+            const fields = form.querySelectorAll('input, select, textarea');
+            fields.forEach(function(element) {
+                // Aplica estilo geral a inputs, selects, textareas (exceto hidden, file, etc.)
+                if (element.type !== 'hidden' && element.type !== 'checkbox' && element.type !== 'radio' && element.type !== 'submit' && element.type !== 'button' && element.type !== 'file') {
+                    element.classList.add('shadow', 'appearance-none', 'border', 'rounded', 'w-full', 'py-2', 'px-3', 'text-gray-700', 'leading-tight', 'focus:outline-none', 'focus:shadow-outline');
+                }
+                 // Estilo específico para file input
+                if (element.type === 'file') {
+                     element.classList.add('block', 'w-full', 'text-sm', 'text-gray-500',
+                                        'file:mr-4', 'file:py-2', 'file:px-4',
+                                        'file:rounded-full', 'file:border-0',
+                                        'file:text-sm', 'file:font-semibold',
+                                        'file:bg-purple-50', 'file:text-purple-700',
+                                        'hover:file:bg-purple-100');
+                }
+                 // Garante fundo branco para selects
+                if (element.tagName === 'SELECT') {
+                    element.classList.add('bg-white'); 
+                }
+                // Desabilita campos que não devem ser editados pelo usuário (ex: role)
+                if (element.name === 'role' || element.name === 'is_staff' || element.name === 'is_superuser' || element.name === 'groups' || element.name === 'user_permissions') {
+                    element.disabled = true;
+                    element.classList.add('bg-gray-100', 'cursor-not-allowed');
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
+
+{% endblock %}
+
