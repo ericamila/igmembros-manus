@@ -13,7 +13,7 @@ class Event(models.Model):
     date = models.DateField(verbose_name="Data")
     time = models.TimeField(blank=True, null=True, verbose_name="Hora")
     description = models.TextField(blank=True, null=True, verbose_name="Descrição")
-    type = models.CharField(max_length=50, choices=EVENT_TYPE_CHOICES, blank=True, null=True, verbose_name="Tipo de Evento")
+    events_type = models.CharField(max_length=50, choices=EVENT_TYPE_CHOICES, blank=True, null=True, verbose_name="Tipo de Evento")
     church = models.ForeignKey(Church, on_delete=models.CASCADE, related_name="events", verbose_name="Igreja")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Criado em")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Atualizado em")

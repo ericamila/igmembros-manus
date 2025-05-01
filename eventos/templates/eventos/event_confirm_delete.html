@@ -25,7 +25,7 @@
                 <p><strong>Título:</strong> {{ event.title }}</p>
                 <p><strong>Data:</strong> {{ event.date|date:"d/m/Y" }}</p>
                 <p><strong>Hora:</strong> {{ event.time|time:"H:i"|default:"Não especificada" }}</p>
-                <p><strong>Tipo:</strong> {{ event.get_type_display|default:"Não especificado" }}</p>
+                <p><strong>Tipo:</strong> {{ event.get_events_type_display|default:"Não especificado" }}</p>
                 <p><strong>Igreja:</strong> {{ event.church.name }}</p>
             </div>
 

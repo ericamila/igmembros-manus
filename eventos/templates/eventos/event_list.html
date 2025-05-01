@@ -43,7 +43,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ event.date|date:"d/m/Y" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ event.time|time:"H:i"|default:"-" }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ event.get_type_display|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ event.get_events_type_display|default:"-" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ event.church.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <a href="{% url 'eventos:event_update' event.pk %}" class="text-indigo-600 hover:text-indigo-900 mr-3">{% include "icons/edit.html" %}</a>
