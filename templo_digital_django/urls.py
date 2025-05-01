@@ -13,4 +13,5 @@ urlpatterns = [
     path("eventos/", include("eventos.urls", namespace="eventos")),
     path("escola/", include("escola.urls", namespace="escola")),
     path("usuarios/", include("usuarios.urls", namespace="usuarios")),
+    path("relatorios/", include("relatorios.urls", namespace="relatorios")),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

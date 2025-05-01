@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'escola.apps.EscolaConfig',
     'usuarios.apps.UsuariosConfig',
     'dashboard.apps.DashboardConfig',
+    'relatorios.apps.RelatoriosConfig', 
 ]
 
 MIDDLEWARE = [

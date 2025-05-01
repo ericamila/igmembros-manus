@@ -1,0 +1,126 @@
+{% extends 'core/base.html' %}
+{% load humanize %}
+
+{% block title %}Relatório de Movimentações Mensais{% endblock %}
+{% block page_title %}Relatório de Movimentações Mensais - {{ mes_nome|capfirst }} de {{ ano_selecionado }}{% endblock %}
+
+{% block content %}
+
+<!-- Filtro de Mês/Ano -->
+<div class="bg-white rounded-lg shadow-md p-4 mb-6">
+    <form method="get" action="{% url 'relatorios:movimentacoes_mensais' %}" class="flex items-end space-x-4">
+        <div>
+            <label for="mes" class="block text-sm font-medium text-gray-700">Mês:</label>
+            <select name="mes" id="mes" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                {% for num, nome in meses_disponiveis %}
+                <option value="{{ num }}" {% if num == mes_selecionado %}selected{% endif %}>{{ nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="ano" class="block text-sm font-medium text-gray-700">Ano:</label>
+            <select name="ano" id="ano" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                {% for ano in anos_disponiveis %}
+                <option value="{{ ano }}" {% if ano == ano_selecionado %}selected{% endif %}>{{ ano }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            Filtrar
+        </button>
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Entradas -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Entradas</h2>
+        {% if entradas %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for entrada in entradas %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entrada.data|date:"d/m/Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ entrada.descricao }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right">R$ {{ entrada.valor|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="bg-gray-50">
+                    <tr>
+                        <th colspan="2" scope="row" class="px-6 py-3 text-right text-sm font-medium text-gray-900 uppercase tracking-wider">Total Entradas</th>
+                        <td class="px-6 py-3 whitespace-nowrap text-sm text-green-700 font-bold text-right">R$ {{ total_entradas|intcomma }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500">Nenhuma entrada registrada neste mês.</p>
+        {% endif %}
+    </div>
+
+    <!-- Saídas -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Saídas</h2>
+        {% if saidas %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for saida in saidas %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ saida.data|date:"d/m/Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ saida.descricao }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">R$ {{ saida.valor|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="bg-gray-50">
+                    <tr>
+                        <th colspan="2" scope="row" class="px-6 py-3 text-right text-sm font-medium text-gray-900 uppercase tracking-wider">Total Saídas</th>
+                        <td class="px-6 py-3 whitespace-nowrap text-sm text-red-700 font-bold text-right">R$ {{ total_saidas|intcomma }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-500">Nenhuma saída registrada neste mês.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Resumo do Mês -->
+<div class="mt-6 bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Resumo do Mês</h2>
+    <div class="flex justify-around items-center">
+        <div class="text-center">
+            <p class="text-sm text-gray-500">Total Entradas</p>
+            <p class="text-2xl font-bold text-green-600">R$ {{ total_entradas|intcomma }}</p>
+        </div>
+        <div class="text-center">
+            <p class="text-sm text-gray-500">Total Saídas</p>
+            <p class="text-2xl font-bold text-red-600">R$ {{ total_saidas|intcomma }}</p>
+        </div>
+        <div class="text-center">
+            <p class="text-sm text-gray-500">Saldo do Mês</p>
+            <p class="text-2xl font-bold {% if saldo_mes >= 0 %}text-blue-600{% else %}text-red-600{% endif %}">R$ {{ saldo_mes|intcomma }}</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

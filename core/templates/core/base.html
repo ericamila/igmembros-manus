@@ -38,6 +38,9 @@
                 <li><a href="{% url 'escola:school_class_list' %}" class="flex items-center p-2 {% if active_menu == 'escola' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
                     {% include 'icons/escola.html' %}
                     <span class="ml-3">Escola</span></a></li>
+                <li><a href="#" class="flex items-center p-2 {% if active_menu == 'relatorios' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/reports.html' %}
+                    <span class="ml-3">Relatórios</span></a></li>
                 {% if user.role == 'admin' %}
                 <li><a href="{% url 'usuarios:user_list' %}" class="flex items-center p-2 {% if active_menu == 'usuarios' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
                     {% include 'icons/usuarios.html' %}

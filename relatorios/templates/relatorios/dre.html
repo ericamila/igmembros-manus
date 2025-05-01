@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+{% load humanize %}
+
+{% block title %}Relatório DRE - {{ ano_selecionado }}{% endblock %}
+{% block page_title %}Demonstrativo de Resultados (DRE) - {{ ano_selecionado }}{% endblock %}
+
+{% block content %}
+
+<!-- Filtro de Ano -->
+<div class="bg-white rounded-lg shadow-md p-4 mb-6">
+    <form method="get" action="{% url 'relatorios:dre' %}" class="flex items-end space-x-4">
+        <div>
+            <label for="ano" class="block text-sm font-medium text-gray-700">Ano:</label>
+            <select name="ano" id="ano" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                {% for ano in anos_disponiveis %}
+                <option value="{{ ano }}" {% if ano == ano_selecionado %}selected{% endif %}>{{ ano }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            Filtrar
+        </button>
+    </form>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Resumo do Ano: {{ ano_selecionado }}</h2>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 mb-6">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receitas (Entradas)</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for entrada in entradas_por_categoria %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ entrada.categoria__nome }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right">R$ {{ entrada.total|intcomma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Nenhuma receita registrada no ano.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="bg-gray-50">
+                <tr>
+                    <th scope="row" class="px-6 py-3 text-right text-sm font-medium text-gray-900 uppercase tracking-wider">Total Receitas</th>
+                    <td class="px-6 py-3 whitespace-nowrap text-sm text-green-700 font-bold text-right">R$ {{ total_receitas|intcomma }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <table class="min-w-full divide-y divide-gray-200 mb-6">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Despesas (Saídas)</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for saida in saidas_por_categoria %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ saida.categoria__nome }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">R$ {{ saida.total|intcomma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Nenhuma despesa registrada no ano.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="bg-gray-50">
+                <tr>
+                    <th scope="row" class="px-6 py-3 text-right text-sm font-medium text-gray-900 uppercase tracking-wider">Total Despesas</th>
+                    <td class="px-6 py-3 whitespace-nowrap text-sm text-red-700 font-bold text-right">R$ {{ total_despesas|intcomma }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="border-t pt-4 mt-4">
+            <div class="flex justify-end items-center">
+                <span class="text-lg font-medium text-gray-900 mr-4">Resultado Líquido do Ano:</span>
+                <span class="text-lg font-bold {% if resultado_liquido >= 0 %}text-blue-600{% else %}text-red-600{% endif %}">
+                    R$ {{ resultado_liquido|intcomma }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
