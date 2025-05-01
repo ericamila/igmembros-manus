@@ -1,6 +1,7 @@
-{% extends 'core/base.html' %}
+{% extends 'core/base.html' %} 
 {% load static %}
 {% load humanize %}
+{% load tz %}
 
 {% block title %}Dashboard{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
@@ -80,7 +81,7 @@
     </div>
 </div>
 
-<!-- Aniversariantes do Mês (NOVO) -->
+<!-- Aniversariantes do Mês -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-gray-800">Aniversariantes do Mês</h2>
@@ -108,57 +109,8 @@
     {% endif %}
 </div>
 
-<!-- Próximos Eventos -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-6">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-800">Próximos Eventos</h2>
-        <a href="{% url 'eventos:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
-    </div>
-    
-    {% if proximos_eventos %}
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Igreja</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for evento in proximos_eventos %}
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <a href="{% url 'eventos:event_detail' evento.pk %}" class="text-purple-600 hover:text-purple-900">{{ evento.title }}</a>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ evento.date|date:"d/m/Y" }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ evento.time|time:"H:i"|default:"-" }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ evento.church.name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        {% if evento.type == 'culto' %}bg-green-100 text-green-800
-                        {% elif evento.type == 'reuniao' %}bg-blue-100 text-blue-800
-                        {% elif evento.type == 'especial' %}bg-purple-100 text-purple-800
-                        {% else %}bg-gray-100 text-gray-800{% endif %}">
-                            {{ evento.get_type_display|default:"Não especificado" }}
-                        </span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <div class="text-center py-4 text-gray-500">
-        Nenhum evento próximo agendado.
-    </div>
-    {% endif %}
-</div>
-
 <!-- Gráficos e Estatísticas -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <!-- Gráfico de Membros por Igreja -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Membros por Igreja</h2>
@@ -175,6 +127,104 @@
         </div>
     </div>
 </div>
+
+<!-- Atividades Recentes e Próximos Eventos (NOVO LAYOUT) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Atividade Recente -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Atividade Recente</h2>
+        {% if atividades_recentes %}
+        <ul class="divide-y divide-gray-200">
+            {% for activity in atividades_recentes %}
+            <li class="py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <!-- Ícone (Placeholder) -->
+                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full 
+                        {% if activity.type == 'new_member' %}bg-blue-100 text-blue-600
+                        {% elif activity.type == 'donation' %}bg-green-100 text-green-600
+                        {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}bg-purple-100 text-purple-600
+                        {% elif activity.type == 'birthday' %}bg-yellow-100 text-yellow-600
+                        {% else %}bg-gray-100 text-gray-600{% endif %}">
+                        {% if activity.type == 'new_member' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                        {% elif activity.type == 'donation' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-.567-.267zM11.567 7.15c.22.07.412.164.567.267v1.698a2.5 2.5 0 01-.567-.267z" /><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.5 4.5 0 00-1.831.666l-.296-.17c-.396-.23-.912.01-.912.457v1.17c0 .447.516.687.912.457l.296-.17A4.5 4.5 0 0010 8.493v1.018a4.5 4.5 0 00-1.831.667l-.296-.17c-.396-.23-.912.01-.912.457v1.17c0 .447.516.687.912.457l.296-.17A4.5 4.5 0 0010 12.493v.092a1 1 0 102 0v-.092a4.5 4.5 0 001.831-.666l.296.17c.396.23.912-.01.912-.457v-1.17c0-.447-.516-.687-.912-.457l-.296.17A4.5 4.5 0 0012 9.511V8.493a4.5 4.5 0 001.831-.667l.296.17c.396.23.912-.01.912-.457v-1.17c0-.447-.516-.687-.912-.457l-.296.17A4.5 4.5 0 0012 5.093V5z" clip-rule="evenodd" /></svg>
+                        {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
+                        {% elif activity.type == 'birthday' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 015.292-2.121C10.92 2.404 11.63 3 12.5 3c.87 0 1.58.596 2.208 1.879A3 3 0 1115 10.5V12a1 1 0 11-2 0v-1.5a3 3 0 01-5.292-2.121C7.08 7.596 6.37 7 5.5 7 .63 7 .92 6.404 4.292 5.121A3 3 0 015 5zm10 1a1 1 0 10-2 0v2.586l-1.293-1.293a1 1 0 00-1.414 1.414L12 10.414l-1.293-1.293a1 1 0 00-1.414 1.414L10.586 12 9.293 13.293a1 1 0 101.414 1.414L12 13.414l1.293 1.293a1 1 0 001.414-1.414L13.414 12l1.293-1.293a1 1 0 00-1.414-1.414L12 10.586V6z" clip-rule="evenodd" /></svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        {% endif %}
+                    </span>
+                    <div class="text-sm">
+                        {% if activity.type == 'new_member' %}
+                        <p class="font-medium text-gray-900">Novo membro registrado</p>
+                        <p class="text-gray-500">{{ activity.name }} completou seu cadastro</p>
+                        {% elif activity.type == 'donation' %}
+                        <p class="font-medium text-gray-900">Doação recebida</p>
+                        <p class="text-gray-500">R$ {{ activity.valor|intcomma }} - {{ activity.descricao }}</p>
+                        {% elif activity.type == 'event_created' %}
+                        <p class="font-medium text-gray-900">Evento criado</p>
+                        <p class="text-gray-500">{{ activity.title }} - {{ activity.date|date:"d/m/Y" }}</p>
+                        {% elif activity.type == 'event_updated' %}
+                        <p class="font-medium text-gray-900">Evento atualizado</p>
+                        <p class="text-gray-500">{{ activity.title }}</p>
+                        {% elif activity.type == 'birthday' %}
+                        <p class="font-medium text-gray-900">Aniversário</p>
+                        <p class="text-gray-500">{{ activity.name }} faz aniversário hoje</p>
+                        {% else %}
+                        <p class="font-medium text-gray-900">Atividade</p>
+                        <p class="text-gray-500">Detalhes da atividade</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <span class="text-xs text-gray-500">{{ activity.activity_type|timesince }} atrás</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-center py-4 text-gray-500">
+            Nenhuma atividade recente.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Próximos Eventos -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Próximos Eventos</h2>
+            <a href="{% url 'eventos:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
+        </div>
+        
+        {% if proximos_eventos %}
+        <ul class="divide-y divide-gray-200">
+            {% for evento in proximos_eventos %}
+            <li class="py-3">
+                <div class="flex items-center justify-between mb-1">
+                    <a href="{% url 'eventos:event_detail' evento.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ evento.title }}</a>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    {% if evento.type == 'culto' %}bg-green-100 text-green-800
+                    {% elif evento.type == 'reuniao' %}bg-blue-100 text-blue-800
+                    {% elif evento.type == 'especial' %}bg-purple-100 text-purple-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ evento.get_type_display|default:"Não especificado" }}
+                    </span>
+                </div>
+                <p class="text-sm text-gray-500">
+                    {{ evento.date|date:"d/m/Y" }} {% if evento.time %}• {{ evento.time|time:"H:i" }}{% endif %}
+                </p>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-center py-4 text-gray-500">
+            Nenhum evento próximo agendado.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -226,42 +276,5 @@
                     borderColor: 'rgba(59, 130, 246, 1)', // Azul
                     backgroundColor: 'rgba(59, 130, 246, 0.2)',
                     tension: 0.3, // Suaviza a linha
-                    fill: true // Preenche a área abaixo da linha (similar à referência)
-                },
-                {
-                    label: 'Saídas',
-                    data: {{ data_saidas|safe }},
-                    borderColor: 'rgba(239, 68, 68, 1)', // Vermelho
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    tension: 0.3,
-                    fill: true
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
-        }
-    });
-</script>
-{% endblock %}
-
+                    fill: true // Preenche a área abaixo da linha
+(Content truncated due to size limit. Use line ranges to read in chunks)

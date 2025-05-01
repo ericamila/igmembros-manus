@@ -10,6 +10,8 @@ from financas.models import Entrada, Saida # Importar Saida
 from django.db.models import Count, Sum, F # Importar Sum e F
 from django.db.models.functions import TruncMonth, ExtractMonth, ExtractDay # Importar funções de data
 import json
+from itertools import chain # Para combinar querysets
+from operator import attrgetter # Para ordenar lista combinada
 
 @login_required
 def index(request):
@@ -18,6 +20,7 @@ def index(request):
     mes_atual = hoje.month
     primeiro_dia_mes_atual = hoje.replace(day=1)
     seis_meses_atras = primeiro_dia_mes_atual - relativedelta(months=5) # Primeiro dia de 6 meses atrás
+    sete_dias_atras = hoje - timedelta(days=7) # Para atividades recentes
 
     # Estatísticas para os cards
     total_membros = Member.objects.count()
@@ -31,10 +34,25 @@ def index(request):
     # Próximos eventos (já existia, manter)
     proximos_eventos = Event.objects.filter(date__gte=hoje).order_by("date", "time")[:5]
 
-    # Aniversariantes do mês (NOVO)
+    # Aniversariantes do mês (já existia, manter)
     aniversariantes_mes = Member.objects.filter(birth_date__month=mes_atual)\
                                         .annotate(dia=ExtractDay("birth_date"))\
                                         .order_by("dia", "name")
+
+    # Atividades Recentes (NOVO)
+    recent_members = Member.objects.filter(created_at__gte=sete_dias_atras).annotate(activity_type=F("created_at"), type=models.Value("new_member", output_field=models.CharField()))
+    recent_donations = Entrada.objects.filter(created_at__gte=sete_dias_atras).annotate(activity_type=F("created_at"), type=models.Value("donation", output_field=models.CharField()))
+    recent_events_created = Event.objects.filter(created_at__gte=sete_dias_atras).annotate(activity_type=F("created_at"), type=models.Value("event_created", output_field=models.CharField()))
+    recent_events_updated = Event.objects.filter(updated_at__gte=sete_dias_atras, updated_at__gt=F("created_at")).annotate(activity_type=F("updated_at"), type=models.Value("event_updated", output_field=models.CharField()))
+    # Aniversários de hoje (para Atividade Recente)
+    birthdays_today = Member.objects.filter(birth_date__month=hoje.month, birth_date__day=hoje.day).annotate(activity_type=models.Value(timezone.now(), output_field=models.DateTimeField()), type=models.Value("birthday", output_field=models.CharField()))
+
+    # Combinar e ordenar atividades
+    all_activities = sorted(
+        chain(recent_members, recent_donations, recent_events_created, recent_events_updated, birthdays_today),
+        key=attrgetter("activity_type"),
+        reverse=True
+    )[:5] # Limitar a 5 atividades recentes
 
     # Dados para o gráfico de membros por igreja
     membros_por_igreja_qs = Church.objects.annotate(num_membros=Count("members")).order_by("-num_membros")
@@ -86,7 +104,8 @@ def index(request):
         "eventos_mes": eventos_mes,
         "arrecadacao_mensal": arrecadacao_mensal,
         "proximos_eventos": proximos_eventos,
-        "aniversariantes_mes": aniversariantes_mes, # Adicionado ao contexto
+        "aniversariantes_mes": aniversariantes_mes,
+        "atividades_recentes": all_activities, # Adicionado ao contexto
         "labels_membros_igreja": json.dumps(labels_membros_igreja),
         "data_membros_igreja": json.dumps(data_membros_igreja),
         "labels_financeiro": json.dumps(labels_financeiro),
