@@ -12,4 +12,5 @@ urlpatterns = [
     path("escola/frequencia/", views.relatorio_frequencia, name="frequencia"),
     path("membros/estatisticas/", views.relatorio_membros_estatisticas, name="membros_estatisticas"),
     path("membros/aniversariantes/", views.relatorio_aniversariantes, name="aniversariantes"),
+    path("membros/contribuicoes/", views.relatorio_contribuicoes_anuais, name="contribuicoes_anuais"),
 ]

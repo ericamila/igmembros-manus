@@ -10,9 +10,9 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Financeiros</h2>
         <ul class="space-y-2">
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Balanço Patrimonial (Simplificado)</a></li>
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Demonstrativo de Resultados (DRE)</a></li>
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Movimentações Mensais</a></li>
+            <li><a href="{% url 'relatorios:balanco' %}" class="text-purple-600 hover:text-purple-800">Balanço Patrimonial (Simplificado)</a></li>
+            <li><a href="{% url 'relatorios:dre' %}" class="text-purple-600 hover:text-purple-800">Demonstrativo de Resultados (DRE)</a></li>
+            <li><a href="{% url 'relatorios:movimentacoes_mensais' %}" class="text-purple-600 hover:text-purple-800">Movimentações Mensais</a></li>
         </ul>
     </div>
 
@@ -20,9 +20,8 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Escola Dominical</h2>
         <ul class="space-y-2">
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Alunos por Turma</a></li>
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Frequência</a></li>
-            {# Adicionar mais relatórios da escola conforme necessário #}
+            <li><a href="{% url 'relatorios:alunos_por_turma' %}" class="text-purple-600 hover:text-purple-800">Alunos por Turma</a></li>
+            <li><a href="{% url 'relatorios:frequencia' %}" class="text-purple-600 hover:text-purple-800">Frequência</a></li>
         </ul>
     </div>
 
@@ -30,10 +29,9 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Membros</h2>
         <ul class="space-y-2">
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Estatísticas Gerais</a></li>
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Aniversariantes</a></li>
-            <li><a href="#" class="text-purple-600 hover:text-purple-800">Contribuições Anuais</a></li>
-            {# Adicionar mais relatórios de membros conforme necessário #}
+            <li><a href="{% url 'relatorios:membros_estatisticas' %}" class="text-purple-600 hover:text-purple-800">Estatísticas Gerais</a></li>
+            <li><a href="{% url 'relatorios:aniversariantes' %}" class="text-purple-600 hover:text-purple-800">Aniversariantes</a></li>
+            <li><a href="{% url 'relatorios:contribuicoes_anuais' %}" class="text-purple-600 hover:text-purple-800">Contribuições Anuais</a></li>
         </ul>
     </div>
 </div>

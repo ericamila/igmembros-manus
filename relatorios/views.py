@@ -11,6 +11,7 @@ from django.db.models.functions import ExtractMonth, ExtractDay # Para aniversar
 
 @login_required
 def index(request):
+    print("index")
     context = {
         "active_menu": "relatorios",
     }
@@ -20,6 +21,7 @@ def index(request):
 # ... (código dos relatórios financeiros mantido) ...
 @login_required
 def relatorio_movimentacoes_mensais(request):
+    print("relatorio_movimentacoes_mensais")
     hoje = timezone.now().date()
     mes_atual = hoje.month
     ano_atual = hoje.year
@@ -67,6 +69,7 @@ def relatorio_movimentacoes_mensais(request):
 
 @login_required
 def relatorio_dre(request):
+    print("relatorio_dre")
     hoje = timezone.now().date()
     ano_atual = hoje.year
 
@@ -110,6 +113,7 @@ def relatorio_dre(request):
 
 @login_required
 def relatorio_balanco(request):
+    print("relatorio_balanco")
     # Para um balanço simplificado, calculamos o saldo acumulado até a data atual
     # Idealmente, um balanço real consideraria ativos e passivos específicos.
     # Aqui, focaremos no saldo de caixa acumulado.
@@ -149,6 +153,7 @@ def relatorio_balanco(request):
 
 @login_required
 def relatorio_alunos_por_turma(request):
+    print("relatorio_alunos_por_turma")
     turmas = SchoolClass.objects.annotate(num_alunos=Count("students")).order_by("name")
     total_alunos = Student.objects.count()
 
@@ -161,6 +166,7 @@ def relatorio_alunos_por_turma(request):
 
 @login_required
 def relatorio_frequencia(request):
+    print("relatorio_frequencia")
     hoje = timezone.now().date()
     turmas = SchoolClass.objects.all().order_by("name")
     
@@ -206,6 +212,7 @@ def relatorio_frequencia(request):
 
 @login_required
 def relatorio_membros_estatisticas(request):
+    print("relatorio_membros_estatisticas")
     total_membros = Member.objects.count()
     membros_ativos = Member.objects.filter(status="ativo").count()
     membros_por_status = Member.objects.values("status").annotate(count=Count("id")).order_by("-count")
@@ -232,6 +239,7 @@ def relatorio_membros_estatisticas(request):
 
 @login_required
 def relatorio_aniversariantes(request):
+    print("relatorio_aniversariantes")
     hoje = timezone.now().date()
     mes_atual = hoje.month
 
@@ -262,4 +270,7 @@ def relatorio_aniversariantes(request):
     return render(request, "relatorios/aniversariantes.html", context)
 
 # View para Relatório de Contribuições Anuais será adicionada aqui
-
+def relatorio_contribuicoes_anuais(request):
+    print("relatorio_contribuicoes_anuais")
+    # Implementar lógica para gerar relatório de contribuições anuais
+    pass  # Placeholder para implementação futura
