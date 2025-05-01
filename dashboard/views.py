@@ -8,13 +8,14 @@ from igrejas.models import Church
 from eventos.models import Event
 from financas.models import Entrada, Saida # Importar Saida
 from django.db.models import Count, Sum, F # Importar Sum e F
-from django.db.models.functions import TruncMonth # Importar TruncMonth
+from django.db.models.functions import TruncMonth, ExtractMonth, ExtractDay # Importar funções de data
 import json
 
 @login_required
 def index(request):
     # Obter data atual e datas para cálculos
     hoje = timezone.now().date()
+    mes_atual = hoje.month
     primeiro_dia_mes_atual = hoje.replace(day=1)
     seis_meses_atras = primeiro_dia_mes_atual - relativedelta(months=5) # Primeiro dia de 6 meses atrás
 
@@ -27,8 +28,13 @@ def index(request):
     entradas_mes_atual = Entrada.objects.filter(data__gte=primeiro_dia_mes_atual, data__lte=hoje)
     arrecadacao_mensal = entradas_mes_atual.aggregate(total=Sum("valor"))["total"] or 0
     
-    # Próximos eventos
+    # Próximos eventos (já existia, manter)
     proximos_eventos = Event.objects.filter(date__gte=hoje).order_by("date", "time")[:5]
+
+    # Aniversariantes do mês (NOVO)
+    aniversariantes_mes = Member.objects.filter(birth_date__month=mes_atual)\
+                                        .annotate(dia=ExtractDay("birth_date"))\
+                                        .order_by("dia", "name")
 
     # Dados para o gráfico de membros por igreja
     membros_por_igreja_qs = Church.objects.annotate(num_membros=Count("members")).order_by("-num_membros")
@@ -80,6 +86,7 @@ def index(request):
         "eventos_mes": eventos_mes,
         "arrecadacao_mensal": arrecadacao_mensal,
         "proximos_eventos": proximos_eventos,
+        "aniversariantes_mes": aniversariantes_mes, # Adicionado ao contexto
         "labels_membros_igreja": json.dumps(labels_membros_igreja),
         "data_membros_igreja": json.dumps(data_membros_igreja),
         "labels_financeiro": json.dumps(labels_financeiro),
@@ -88,4 +95,5 @@ def index(request):
     }
     
     return render(request, "dashboard/index.html", context)
+
 
