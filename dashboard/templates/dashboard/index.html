@@ -134,19 +134,106 @@
     <!-- Gráfico de Membros por Igreja -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Membros por Igreja</h2>
-        <div class="h-64 bg-gray-100 rounded flex items-center justify-center">
-            <!-- Placeholder para gráfico -->
-            <p class="text-gray-500">Gráfico de membros por igreja</p>
+        <div class="h-64">
+            <canvas id="membrosPorIgrejaChart"></canvas>
         </div>
     </div>
     
     <!-- Gráfico de Finanças -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Resumo Financeiro</h2>
-        <div class="h-64 bg-gray-100 rounded flex items-center justify-center">
-            <!-- Placeholder para gráfico -->
-            <p class="text-gray-500">Gráfico de entradas e saídas</p>
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Relatório Financeiro (Últimos 6 Meses)</h2>
+        <div class="h-64">
+            <canvas id="financeiroChart"></canvas> {# Changed ID #}
         </div>
     </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Gráfico de Membros por Igreja
+    const membrosPorIgrejaCtx = document.getElementById('membrosPorIgrejaChart').getContext('2d');
+    const membrosPorIgrejaChart = new Chart(membrosPorIgrejaCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_membros_igreja|safe }},
+            datasets: [{
+                label: 'Nº de Membros',
+                data: {{ data_membros_igreja|safe }},
+                backgroundColor: 'rgba(139, 92, 246, 0.7)', // Cor roxa similar à referência
+                borderColor: 'rgba(139, 92, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0 // Garante que o eixo Y mostre apenas números inteiros
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false // Oculta a legenda conforme a referência
+                }
+            }
+        }
+    });
+
+    // Gráfico Financeiro (Entradas vs Saídas)
+    const financeiroCtx = document.getElementById('financeiroChart').getContext('2d');
+    const financeiroChart = new Chart(financeiroCtx, {
+        type: 'line', // Usando gráfico de linha para entradas e saídas
+        data: {
+            labels: {{ labels_financeiro|safe }},
+            datasets: [
+                {
+                    label: 'Entradas',
+                    data: {{ data_entradas|safe }},
+                    borderColor: 'rgba(59, 130, 246, 1)', // Azul
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    tension: 0.3, // Suaviza a linha
+                    fill: true // Preenche a área abaixo da linha (similar à referência)
+                },
+                {
+                    label: 'Saídas',
+                    data: {{ data_saidas|safe }},
+                    borderColor: 'rgba(239, 68, 68, 1)', // Vermelho
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+</script>
+{% endblock %}
+

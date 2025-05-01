@@ -30,10 +30,10 @@
                 {% for categoria in object_list %}
                 <tr>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        {{ categoria.name }}
+                        {{ categoria.nome }}
                     </td>
                      <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        {{ categoria.get_type_display }}
+                        {{ categoria.get_tipo_display }}
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <a href="{% url 'financas:categoria_update' categoria.pk %}" class="text-yellow-600 hover:text-yellow-900 mr-3">Editar</a>

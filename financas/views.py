@@ -21,6 +21,12 @@ def entrada_list(request):
     primeiro_dia_mes = hoje.replace(day=1)
     entradas_mes = Entrada.objects.filter(data__gte=primeiro_dia_mes, data__lte=hoje)
     total_mes = sum(entrada.valor for entrada in entradas_mes)
+    print(entradas)
+
+    print(hoje)
+    print(primeiro_dia_mes)
+    print(entradas_mes)
+    print(total_mes)
     
     return render(request, 'financas/entrada_list.html', {
         'entradas': entradas,
@@ -93,10 +99,10 @@ def entrada_delete(request, pk):
 @login_required
 def saida_list(request):
     saidas = Saida.objects.all().order_by('-data')
-    
+    print(saidas)
     # Calcular totais
     total_saidas = Saida.objects.aggregate(total=Sum('valor'))['total'] or 0
-    
+ 
     # Saídas do mês atual
     hoje = timezone.now().date()
     primeiro_dia_mes = hoje.replace(day=1)
@@ -104,7 +110,7 @@ def saida_list(request):
     total_mes = sum(saida.valor for saida in saidas_mes)
     
     return render(request, 'financas/saida_list.html', {
-        'saidas': saidas,
+        'object_list': saidas,
         'total_saidas': total_saidas,
         'total_mes': total_mes,
         'active_menu': 'financas',
@@ -173,7 +179,7 @@ def saida_delete(request, pk):
 def categoria_list(request):
     categorias = Categoria.objects.all().order_by('nome')
     return render(request, 'financas/categoria_list.html', {
-        'categorias': categorias,
+        'object_list': categorias,
         'active_menu': 'financas',
     })
 

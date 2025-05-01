@@ -38,17 +38,17 @@
                 <tr>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <a href="{% url 'financas:saida_detail' saida.pk %}" class="text-blue-600 hover:text-blue-900">
-                            {{ saida.description }}
+                            {{ saida.descricao }}
                         </a>
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        R$ {{ saida.amount|floatformat:2 }}
+                        R$ {{ saida.valor|floatformat:2 }}
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        {{ saida.date|date:"d/m/Y" }}
+                        {{ saida.data|date:"d/m/Y" }}
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        {{ saida.category.name|default:"Sem Categoria" }}
+                        {{ saida.categoria.nome|default:"Sem Categoria" }}
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <a href="{% url 'financas:saida_update' saida.pk %}" class="text-yellow-600 hover:text-yellow-900 mr-3">Editar</a>

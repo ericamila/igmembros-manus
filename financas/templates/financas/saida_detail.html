@@ -10,19 +10,19 @@
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div class="mb-4">
             <strong class="block text-gray-700 text-sm font-bold mb-2">Descrição:</strong>
-            <p class="text-gray-700 text-base">{{ saida.description }}</p>
+            <p class="text-gray-700 text-base">{{ saida.descricao }}</p>
         </div>
         <div class="mb-4">
             <strong class="block text-gray-700 text-sm font-bold mb-2">Valor:</strong>
-            <p class="text-gray-700 text-base">R$ {{ saida.amount|floatformat:2 }}</p>
+            <p class="text-gray-700 text-base">R$ {{ saida.valor|floatformat:2 }}</p>
         </div>
         <div class="mb-4">
             <strong class="block text-gray-700 text-sm font-bold mb-2">Data:</strong>
-            <p class="text-gray-700 text-base">{{ saida.date|date:"d/m/Y" }}</p>
+            <p class="text-gray-700 text-base">{{ saida.data|date:"d/m/Y" }}</p>
         </div>
         <div class="mb-6">
             <strong class="block text-gray-700 text-sm font-bold mb-2">Categoria:</strong>
-            <p class="text-gray-700 text-base">{{ saida.category.name|default:"Sem Categoria" }}</p>
+            <p class="text-gray-700 text-base">{{ saida.categoria.nome|default:"Sem Categoria" }}</p>
         </div>
 
         <div class="flex items-center justify-between">

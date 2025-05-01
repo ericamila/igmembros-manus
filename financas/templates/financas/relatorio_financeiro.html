@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Relatório Financeiro</h1>
 
     <!-- Formulário de Filtro (Opcional, adicionar lógica na view se necessário) -->
-    {#
+    
     <form method="get" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
@@ -40,7 +40,7 @@
             </button>
         </div>
     </form>
-    #}
+    
 
     <!-- Resumo Financeiro -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -54,7 +54,7 @@
         </div>
         <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
             <strong class="font-bold">Saldo Atual:</strong>
-            <span class="block sm:inline">R$ {{ saldo|floatformat:2 }}</span>
+            <span class="block sm:inline">R$ {{ saldo_mes|floatformat:2 }}</span>
         </div>
     </div>
 
