@@ -1,0 +1,31 @@
+{
+  "name": "templo_digital_django",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./theme/static_src/src/styles.css -o ./theme/static/css/dist/styles.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericamila/igmembros-manus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ericamila/igmembros-manus/issues"
+  },
+  "homepage": "https://github.com/ericamila/igmembros-manus#readme",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.5"
+  },
+  "dependencies": {
+    "templo_digital_django": "file:"
+  }
+}
