@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">{{ title }}</h1>
+
+    <form method="post" enctype="multipart/form-date" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
+        
+        {# Renderizar campos usando um loop para consistência e adicionar classes via JS #}
+        {% for field in form %}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+                <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+                <p class="text-red-500 text-xs italic">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="flex items-center justify-between mt-8 border-t border-gray-200 pt-6">
+            <a href="{% url 'finances:expense_list' %}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                Cancelar
+            </a>
+            <button class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" type="submit">
+                Salvar Saída
+            </button>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+    // Adiciona classes do Tailwind aos campos do formulário
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        if (form) {
+            const fields = form.querySelectorAll('input, select, textarea');
+            fields.forEach(function(element) {
+                if (element.type !== 'hidden' && element.type !== 'checkbox' && element.type !== 'radio' && element.type !== 'submit' && element.type !== 'button' && element.type !== 'file') {
+                    element.classList.add('shadow', 'appearance-none', 'border', 'rounded', 'w-full', 'py-2', 'px-3', 'text-gray-700', 'leading-tight', 'focus:outline-none', 'focus:shadow-outline');
+                }
+                 // Estilo específico para file input
+                if (element.type === 'file') {
+                     element.classList.add('block', 'w-full', 'text-sm', 'text-gray-500',
+                                        'file:mr-4', 'file:py-2', 'file:px-4',
+                                        'file:rounded-full', 'file:border-0',
+                                        'file:text-sm', 'file:font-semibold',
+                                        'file:bg-purple-50', 'file:text-purple-700',
+                                        'hover:file:bg-purple-100');
+                }
+                 // Remover estilo padrão de select e adicionar seta customizada se necessário
+                if (element.tagName === 'SELECT') {
+                    element.classList.add('bg-white'); // Garante fundo branco
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% endblock %}
+

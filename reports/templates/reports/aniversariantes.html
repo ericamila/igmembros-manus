@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Relatório de Aniversariantes - {{ month_name }}{% endblock %}
+{% block page_title %}Relatório de Aniversariantes - {{ month_name }}{% endblock %}
+
+{% block content %}
+
+<!-- Filtro de Mês -->
+<div class="bg-white rounded-lg shadow-md p-4 mb-6 container-fluid px-4">
+        <h1 class="mt-4">Relatório de Aniversariantes</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
+            <li class="breadcrumb-item active">Aniversariantes</li>
+        </ol>
+    
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-filter me-1"></i>
+                Filtros
+            </div>
+            <div class="card-body">
+                <form method="get">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="month" class="form-label">Mês:</label>
+                            <select name="month" id="month" class="form-select">
+                                {% for num, nome in available_months %}
+                                    <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end mb-3">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-birthday-cake me-1"></i>
+                Aniversariantes de {{ month_name|title }}
+            </div>
+            <div class="card-body">
+                {% if birthdays %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="birthdaysTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Dia</th>
+                                    <th>Data de Nascimento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for birthday in birthdays %}
+                                <tr>
+                                    <td>{{ birthday.name }}</td>
+                                    <td class="text-center">{{ birthday.dia }}</td>
+                                    <td>{{ birthday.birth_date|date:"d/m/Y"|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center">Nenhum aniversariante encontrado para {{ month_name|title }}.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    
+    {% block extra_js %}
+    <script>
+        // Optional: Add DataTables initialization if needed
+        // $(document).ready(function() {
+        //     $('#birthdaysTable').DataTable();
+        // });
+    </script>
+    {% endblock %}
+    
+    
+

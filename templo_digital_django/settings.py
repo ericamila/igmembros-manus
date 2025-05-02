@@ -50,14 +50,14 @@ INSTALLED_APPS = [
 
     # Meus Apps
     'core.apps.CoreConfig',
-    'igrejas.apps.IgrejasConfig',
-    'membros.apps.MembrosConfig',
-    'financas.apps.FinancasConfig',
-    'eventos.apps.EventosConfig',
-    'escola.apps.EscolaConfig',
-    'usuarios.apps.UsuariosConfig',
+    'churches.apps.ChurchesConfig',
+    'members.apps.MembersConfig',
+    'finances.apps.FinancesConfig',
+    'events.apps.EventsConfig',
+    'school.apps.SchoolConfig',
+    'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
-    'relatorios.apps.RelatoriosConfig', 
+    'reports.apps.ReportsConfig', 
 ]
 
 MIDDLEWARE = [
@@ -158,9 +158,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TAILWIND_APP_NAME = 'theme'
 
 # Configuração de autenticação personalizada
-AUTH_USER_MODEL = 'usuarios.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Configurações de login e redirecionamento
-LOGIN_URL = 'usuarios:login'
+LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'dashboard:index'
-LOGOUT_REDIRECT_URL = 'usuarios:login'
+LOGOUT_REDIRECT_URL = 'users:login'

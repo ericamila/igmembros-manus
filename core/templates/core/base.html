@@ -23,38 +23,38 @@
                 <li><a href="{% url 'dashboard:index' %}" class="flex items-center p-2 {% if active_menu == 'dashboard' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
                     {% include 'icons/dashboard.html' %}
                     <span class="ml-3">Dashboard</span></a></li>
-                <li><a href="{% url 'igrejas:igreja_list' %}" class="flex items-center p-2 {% if active_menu == 'igrejas' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/igrejas.html' %}
+                <li><a href="{% url 'churches:church_list' %}" class="flex items-center p-2 {% if active_menu == 'churches' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/churches.html' %}
                     <span class="ml-3">Igrejas</span></a></li>
-                <li><a href="{% url 'membros:membro_list' %}" class="flex items-center p-2 {% if active_menu == 'membros' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/membros.html' %}
+                <li><a href="{% url 'members:member_list' %}" class="flex items-center p-2 {% if active_menu == 'members' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/members.html' %}
                     <span class="ml-3">Membros</span></a></li>
-                <li><a href="{% url 'eventos:event_list' %}" class="flex items-center p-2 {% if active_menu == 'eventos' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/eventos.html' %}
+                <li><a href="{% url 'events:event_list' %}" class="flex items-center p-2 {% if active_menu == 'events' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/events.html' %}
                     <span class="ml-3">Eventos</span></a></li>
-                <li><a href="{% url 'financas:entrada_list' %}" class="flex items-center p-2 {% if active_menu == 'financas' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/financas.html' %}
+                <li><a href="{% url 'finances:income_list' %}" class="flex items-center p-2 {% if active_menu == 'finances' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/finances.html' %}
                     <span class="ml-3">Finanças</span></a></li>
-                <li><a href="{% url 'escola:school_class_list' %}" class="flex items-center p-2 {% if active_menu == 'escola' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/escola.html' %}
+                <li><a href="{% url 'school:school_class_list' %}" class="flex items-center p-2 {% if active_menu == 'school' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/school.html' %}
                     <span class="ml-3">Escola</span></a></li>
-                <li><a href="{% url 'relatorios:index' %}" class="flex items-center p-2 {% if active_menu == 'relatorios' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                <li><a href="{% url 'reports:index' %}" class="flex items-center p-2 {% if active_menu == 'reports' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
                     {% include 'icons/reports.html' %}
                     <span class="ml-3">Relatórios</span></a></li>
                 {% if user.role == 'admin' %}
-                <li><a href="{% url 'usuarios:user_list' %}" class="flex items-center p-2 {% if active_menu == 'usuarios' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/usuarios.html' %}
+                <li><a href="{% url 'users:user_list' %}" class="flex items-center p-2 {% if active_menu == 'users' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+                    {% include 'icons/users.html' %}
                     <span class="ml-3">Usuários</span></a></li>
                 {% endif %}
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-700">
-            <a href="{% url 'usuarios:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
-                {% include 'icons/perfil.html' %}
+            <a href="{% url 'users:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
+                {% include 'icons/profile.html' %}
                 <span class="ml-3">Meu Perfil</span>
             </a>
-            <a href="{% url 'usuarios:logout' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-                {% include 'icons/sair.html' %}
+            <a href="{% url 'users:logout' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+                {% include 'icons/logout.html' %}
                 <span class="ml-3">Sair</span></a>
         </div>
     </aside>

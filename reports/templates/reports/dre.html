@@ -1,0 +1,96 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Relatório DRE (Demonstração do Resultado){% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Relatório DRE (Demonstração do Resultado)</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
+        <li class="breadcrumb-item active">DRE</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            Filtros
+        </div>
+        <div class="card-body">
+            <form method="get">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="year" class="form-label">Ano:</label>
+                        <select name="year" id="year" class="form-select">
+                            {% for y in available_years %}
+                                <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end mb-3">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-calculator me-1"></i>
+            DRE de {{ selected_year }}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Receitas Operacionais</th>
+                        </tr>
+                        {% for income_cat in incomes_by_category %}
+                        <tr>
+                            <td>{{ income_cat.category__name }}</td>
+                            <td class="text-end">{{ income_cat.total|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">Nenhuma receita registrada no período.</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="table-light">
+                            <th>(=) Total Receitas</th>
+                            <th class="text-end">{{ total_revenue|intcomma }}</th>
+                        </tr>
+
+                        <tr>
+                            <th colspan="2">Despesas Operacionais</th>
+                        </tr>
+                        {% for expense_cat in expenses_by_category %}
+                        <tr>
+                            <td>{{ expense_cat.category__name }}</td>
+                            <td class="text-end">({{ expense_cat.total|intcomma }})</td> {# Display expenses as negative #}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">Nenhuma despesa registrada no período.</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="table-light">
+                            <th>(=) Total Despesas</th>
+                            <th class="text-end">({{ total_expenditure|intcomma }})</th>
+                        </tr>
+
+                        <tr class="{% if net_result >= 0 %}table-success{% else %}table-danger{% endif %}">
+                            <th>(=) Resultado Líquido do Período</th>
+                            <th class="text-end">{{ net_result|intcomma }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

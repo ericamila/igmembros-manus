@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Turmas da Escola Dominical{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Turmas da Escola Dominical</h1>
+        <a href="{% url 'school:school_class_create' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+            Nova Turma
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %} rounded">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        {% if classes %}
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Professor</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sala</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horário</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alunos</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for class in classes %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'school:school_class_detail' class.pk %}" class="text-purple-600 hover:text-purple-900">{{ class.name }}</a>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ class.teacher.name|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ class.room|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ class.schedule|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ class.students.count }} / {{ class.max_students|default:"∞" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{% url 'school:school_class_update' class.pk %}" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
+                        <a href="{% url 'school:school_class_delete' class.pk %}" class="text-red-600 hover:text-red-900">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="p-6 text-center text-gray-500">
+            Nenhuma turma cadastrada. <a href="{% url 'school:school_class_create' %}" class="text-purple-600 hover:text-purple-900">Criar nova turma</a>.
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Navegação Rápida</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{% url 'school:student_list' %}" class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <h3 class="font-semibold text-purple-600">Lista de Alunos</h3>
+                <p class="text-gray-600 text-sm mt-1">Visualize e gerencie todos os alunos matriculados</p>
+            </a>
+
+            <a href="{% url 'school:student_create' %}" class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <h3 class="font-semibold text-purple-600">Nova Matrícula</h3>
+                <p class="text-gray-600 text-sm mt-1">Matricular um novo aluno em uma turma</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

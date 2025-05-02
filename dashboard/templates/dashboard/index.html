@@ -13,7 +13,7 @@
         <div class="flex justify-between items-start">
             <div>
                 <p class="text-sm text-gray-500 mb-1">Total de Membros</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ total_membros|default:"0" }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800">{{ total_members|default:"0" }}</h3>
             </div>
             <div class="p-3 bg-blue-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <a href="{% url 'membros:membro_list' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver todos os membros →</a>
+            <a href="{% url 'members:member_list' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver todos os membros →</a>
         </div>
     </div>
 
@@ -31,7 +31,7 @@
         <div class="flex justify-between items-start">
             <div>
                 <p class="text-sm text-gray-500 mb-1">Total de Igrejas</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ total_igrejas|default:"0" }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800">{{ total_churches|default:"0" }}</h3>
             </div>
             <div class="p-3 bg-purple-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <a href="{% url 'igrejas:igreja_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todas as igrejas →</a>
+            <a href="{% url 'churches:church_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todas as igrejas →</a>
         </div>
     </div>
 
@@ -49,7 +49,7 @@
         <div class="flex justify-between items-start">
             <div>
                 <p class="text-sm text-gray-500 mb-1">Eventos do Mês</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ eventos_mes|default:"0" }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800">{{ events_mes|default:"0" }}</h3>
             </div>
             <div class="p-3 bg-green-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <a href="{% url 'eventos:event_list' %}" class="text-sm text-green-600 hover:text-green-800 font-medium">Ver todos os eventos →</a>
+            <a href="{% url 'events:event_list' %}" class="text-sm text-green-600 hover:text-green-800 font-medium">Ver todos os eventos →</a>
         </div>
     </div>
 
@@ -76,7 +76,7 @@
             </div>
         </div>
         <div class="mt-4">
-            <a href="{% url 'financas:entrada_list' %}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">Ver finanças →</a>
+            <a href="{% url 'finances:income_list' %}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">Ver finanças →</a>
         </div>
     </div>
 </div>
@@ -85,20 +85,20 @@
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-gray-800">Aniversariantes do Mês</h2>
-        <a href="{% url 'relatorios:aniversariantes' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver relatório →</a>
+        <a href="{% url 'reports:aniversariantes' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver relatório →</a>
     </div>
     
     {% if aniversariantes_mes %}
     <ul class="divide-y divide-gray-200">
-        {% for membro in aniversariantes_mes %}
+        {% for member in aniversariantes_mes %}
         <li class="py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
-                    {{ membro.birth_date|date:"d" }}
+                    {{ member.birth_date|date:"d" }}
                 </span>
-                <a href="{% url 'membros:membro_detail' membro.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ membro.name }}</a>
+                <a href="{% url 'members:member_detail' member.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ member.name }}</a>
             </div>
-            <span class="text-sm text-gray-500">{{ membro.phone|default:"-" }}</span>
+            <span class="text-sm text-gray-500">{{ member.phone|default:"-" }}</span>
         </li>
         {% endfor %}
     </ul>
@@ -115,7 +115,7 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Membros por Igreja</h2>
         <div class="h-64">
-            <canvas id="membrosPorIgrejaChart"></canvas>
+            <canvas id="membersPorIgrejaChart"></canvas>
         </div>
     </div>
     
@@ -194,15 +194,15 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-gray-800">Próximos Eventos</h2>
-            <a href="{% url 'eventos:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
+            <a href="{% url 'events:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
         </div>
         
-        {% if proximos_eventos %}
+        {% if proximos_events %}
         <ul class="divide-y divide-gray-200">
-            {% for evento in proximos_eventos %}
+            {% for evento in proximos_events %}
             <li class="py-3">
                 <div class="flex items-center justify-between mb-1">
-                    <a href="{% url 'eventos:event_detail' evento.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ evento.title }}</a>
+                    <a href="{% url 'events:event_detail' evento.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ evento.title }}</a>
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                     {% if evento.type == 'culto' %}bg-green-100 text-green-800
                     {% elif evento.type == 'reuniao' %}bg-blue-100 text-blue-800
@@ -231,14 +231,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Gráfico de Membros por Igreja
-    const membrosPorIgrejaCtx = document.getElementById('membrosPorIgrejaChart').getContext('2d');
-    const membrosPorIgrejaChart = new Chart(membrosPorIgrejaCtx, {
+    const membersPorIgrejaCtx = document.getElementById('membersPorIgrejaChart').getContext('2d');
+    const membersPorIgrejaChart = new Chart(membersPorIgrejaCtx, {
         type: 'bar',
         data: {
-            labels: {{ labels_membros_igreja|safe }},
+            labels: {{ labels_members_church|safe }},
             datasets: [{
                 label: 'Nº de Membros',
-                data: {{ data_membros_igreja|safe }},
+                data: {{ data_members_church|safe }},
                 backgroundColor: 'rgba(139, 92, 246, 0.7)', // Cor roxa similar à referência
                 borderColor: 'rgba(139, 92, 246, 1)',
                 borderWidth: 1
@@ -266,15 +266,51 @@
     // Gráfico Financeiro (Entradas vs Saídas)
     const financeiroCtx = document.getElementById('financeiroChart').getContext('2d');
     const financeiroChart = new Chart(financeiroCtx, {
-        type: 'line', // Usando gráfico de linha para entradas e saídas
+        type: 'line', // Usando gráfico de linha para incomes e saídas
         data: {
             labels: {{ labels_financeiro|safe }},
             datasets: [
                 {
                     label: 'Entradas',
-                    data: {{ data_entradas|safe }},
+                    data: {{ data_incomes|safe }},
                     borderColor: 'rgba(59, 130, 246, 1)', // Azul
                     backgroundColor: 'rgba(59, 130, 246, 0.2)',
                     tension: 0.3, // Suaviza a linha
-                    fill: true // Preenche a área abaixo da linha
-(Content truncated due to size limit. Use line ranges to read in chunks)
+                    fill: true // Preenche a área abaixo da linha (similar à referência)
+                },
+                {
+                    label: 'Saídas',
+                    data: {{ data_saidas|safe }},
+                    borderColor: 'rgba(239, 68, 68, 1)', // Vermelho
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+</script>
+{% endblock %}

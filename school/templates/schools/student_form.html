@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="mb-6">
+        <a href="{% url 'school:student_list' %}" class="text-purple-600 hover:text-purple-700">
+            &larr; Voltar para lista de alunos
+        </a>
+    </div>
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ title }}</h1>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="p-4 mb-4 bg-red-100 text-red-700 rounded">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="mb-4">
+                        <label for="{{ form.member.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Membro*
+                        </label>
+                        {{ form.member }}
+                        {% if form.member.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.member.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.school_class.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Turma*
+                        </label>
+                        {{ form.school_class }}
+                        {% if form.school_class.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {% for error in form.school_class.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <a href="{% url 'school:student_list' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

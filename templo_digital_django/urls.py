@@ -7,11 +7,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("dashboard.urls", namespace="dashboard")), # Rota raiz para o dashboard
     # Rotas para todos os apps
-    path("igrejas/", include("igrejas.urls", namespace="igrejas")),
-    path("membros/", include("membros.urls", namespace="membros")),
-    path("financas/", include("financas.urls", namespace="financas")),
-    path("eventos/", include("eventos.urls", namespace="eventos")),
-    path("escola/", include("escola.urls", namespace="escola")),
-    path("usuarios/", include("usuarios.urls", namespace="usuarios")),
-    path("relatorios/", include("relatorios.urls", namespace="relatorios")),
+    path("churches/", include("churches.urls", namespace="churches")),
+    path("members/", include("members.urls", namespace="members")),
+    path("finances/", include("finances.urls", namespace="finances")),
+    path("events/", include("events.urls", namespace="evento")),
+    path("school/", include("school.urls", namespace="school")),
+    path("users/", include("users.urls", namespace="users")),
+    path("reports/", include("reports.urls", namespace="reports")),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Relatório de Alunos por Turma{% endblock %}
+{% block page_title %}Relatório de Alunos por Turma{% endblock %}
+
+{% block content %}
+
+<div class="bg-white rounded-lg shadow-md p-6 container-fluid px-4">
+    <h1 class="mt-4">Relatório de Alunos por Turma</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
+        <li class="breadcrumb-item active">Alunos por Turma</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-users me-1"></i>
+            Alunos por Turma da Escola Dominical
+        </div>
+        <div class="card-body">
+            {% if classes %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="classesTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Nome da Turma</th>
+                                <th>Professor(a)</th>
+                                <th>Número de Alunos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for class_item in classes %}
+                            <tr>
+                                <td>{{ class_item.name }}</td>
+                                <td>{{ class_item.teacher.name|default:"-" }}</td>
+                                <td class="text-center">{{ class_item.num_students }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" class="text-end">Total Geral de Alunos:</th>
+                                <th class="text-center">{{ total_students }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center">Nenhuma turma encontrada.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Optional: Add DataTables initialization if needed
+    // $(document).ready(function() {
+    //     $('#classesTable').DataTable();
+    // });
+</script>
+{% endblock %}
+

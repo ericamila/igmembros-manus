@@ -1,0 +1,99 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Relatório de Contribuições Anuais - {{ year_selected }}{% endblock %}
+{% block page_title %}Relatório de Contribuições Anuais - {{ year_selected }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Reports</a></li>
+        <li class="breadcrumb-item active">Relatório de Contribuições Anuais</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i>
+            Filters
+        </div>
+        <div class="card-body">
+            <form method="get">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="year" class="form-label">Year:</label>
+                        <select name="year" id="year" class="form-select">
+                            {% for y in available_years %}
+                                {# Handle potential datetime objects from TruncYear #}
+                                <option value="{{ y.year|default:y }}" {% if y.year|default:y == selected_year %}selected{% endif %}>{{ y.year|default:y }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="member" class="form-label">Member (Optional):</label>
+                        <select name="member" id="member" class="form-select">
+                            <option value="">Todos os membros</option>
+                            {% for m in all_members %}
+                                <option value="{{ m.id }}" {% if m.id|stringformat:"s" == selected_member %}selected{% endif %}>{{ m.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end mb-3">
+                        <button type="submit" class="btn btn-primary">Filtro</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-bar me-1"></i>
+            Contributions for {{ selected_year }}{% if selected_member_name %} for {{ selected_member_name }}{% endif %}
+        </div>
+        <div class="card-body">
+            {% if contributions %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="contributionsTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Total Contributed (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contribution in contributions %}
+                            <tr>
+                                <td>{{ contribution.member__name }}</td>
+                                <td class="text-end">{{ contribution.total_contribution|intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% if total_overall_contribution is not None %}
+                        <tfoot>
+                            <tr>
+                                <th class="text-end">Overall Total:</th>
+                                <th class="text-end">{{ total_overall_contribution|intcomma }}</th>
+                            </tr>
+                        </tfoot>
+                        {% endif %}
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center">No contributions found for the selected filters.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any specific JS for this page if needed, e.g., for DataTables
+    // $(document).ready(function() {
+    //     $('#contributionsTable').DataTable();
+    // });
+</script>
+{% endblock %}
+

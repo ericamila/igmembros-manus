@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Relatórios{% endblock %}
+{% block page_title %}Relatórios{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Card Relatórios Financeiros -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Financeiros</h2>
+        <ul class="space-y-2">
+            <li><a href="{% url 'reports:balanco' %}" class="text-purple-600 hover:text-purple-800">Balanço Patrimonial (Simplificado)</a></li>
+            <li><a href="{% url 'reports:dre' %}" class="text-purple-600 hover:text-purple-800">Demonstrativo de Resultados (DRE)</a></li>
+            <li><a href="{% url 'reports:movimentacoes_mensais' %}" class="text-purple-600 hover:text-purple-800">Movimentações Mensais</a></li>
+        </ul>
+    </div>
+
+    <!-- Card Relatórios da Escola -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Escola Dominical</h2>
+        <ul class="space-y-2">
+            <li><a href="{% url 'reports:alunos_por_turma' %}" class="text-purple-600 hover:text-purple-800">Alunos por Turma</a></li>
+            <li><a href="{% url 'reports:frequencia' %}" class="text-purple-600 hover:text-purple-800">Frequência</a></li>
+        </ul>
+    </div>
+
+    <!-- Card Relatórios de Membros -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Membros</h2>
+        <ul class="space-y-2">
+            <li><a href="{% url 'reports:members_estatisticas' %}" class="text-purple-600 hover:text-purple-800">Estatísticas Gerais</a></li>
+            <li><a href="{% url 'reports:aniversariantes' %}" class="text-purple-600 hover:text-purple-800">Aniversariantes</a></li>
+            <li><a href="{% url 'reports:contribuicoes_anuais' %}" class="text-purple-600 hover:text-purple-800">Contribuições Anuais</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+

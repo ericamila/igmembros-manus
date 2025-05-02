@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
-from membros.models import Member
-from igrejas.models import Church
-from eventos.models import Event
-from financas.models import Entrada, Saida # Importar Saida
+from members.models import Member
+from churches.models import Church
+from events.models import Event
+from finances.models import Income, Expense # Importar Saida
 from django.db import models # <<< ADICIONADO IMPORT
 from django.db.models import Count, Sum, F # Importar Sum e F
 from django.db.models.functions import TruncMonth, ExtractMonth, ExtractDay # Importar funções de data
@@ -17,38 +17,39 @@ from operator import attrgetter # Para ordenar lista combinada
 @login_required
 def index(request):
     # Obter data atual e datas para cálculos
-    hoje = timezone.now().date()
-    agora = timezone.now() # Para usar em activity_type e evitar warning
-    mes_atual = hoje.month
-    primeiro_dia_mes_atual = hoje.replace(day=1)
-    seis_meses_atras = primeiro_dia_mes_atual - relativedelta(months=5) # Primeiro dia de 6 meses atrás
-    sete_dias_atras = agora - timedelta(days=7) # Usar datetime aware para comparação
+    today = timezone.now().date()
+    now = timezone.now() # Para usar em activity_type e evitar warning
+    current_month = today.month
+    first_day_current_month = today.replace(day=1)
+    six_months_ago = first_day_current_month - relativedelta(months=5)# Primeiro dia de 6 meses atrás
+    seven_days_ago = now - timedelta(days=7) # Usar datetime aware para comparação
 
     # Estatísticas para os cards
-    total_membros = Member.objects.count()
-    total_igrejas = Church.objects.count()
-    eventos_mes = Event.objects.filter(date__gte=primeiro_dia_mes_atual, date__lte=hoje + timedelta(days=30)).count()
+    total_members = Member.objects.count()
+    total_churches = Church.objects.count()
+    events_month = Event.objects.filter(date__gte=first_day_current_month, date__lte=today + timedelta(days=30)).count()
+    
     
     # Calcular arrecadação mensal (card)
-    entradas_mes_atual = Entrada.objects.filter(data__gte=primeiro_dia_mes_atual, data__lte=hoje)
-    arrecadacao_mensal = entradas_mes_atual.aggregate(total=Sum("valor"))["total"] or 0
+    income_current_month = Income.objects.filter(date__gte=first_day_current_month, date__lte=today)
+    monthly_income = income_current_month.aggregate(total=Sum("amount"))["total"] or 0
     
     # Próximos eventos (já existia, manter)
-    proximos_eventos = Event.objects.filter(date__gte=hoje).order_by("date", "time")[:5]
+    upcoming_events = Event.objects.filter(date__gte=today).order_by("date", "time")[:5]
 
     # Aniversariantes do mês (já existia, manter)
-    aniversariantes_mes = Member.objects.filter(birth_date__month=mes_atual)\
-                                        .annotate(dia=ExtractDay("birth_date"))\
-                                        .order_by("dia", "name")
+    birthdays_month = Member.objects.filter(birth_date__month=current_month)\
+                                        .annotate(day=ExtractDay("birth_date"))\
+                                        .order_by("day", "name")
 
     # Atividades Recentes (CORRIGIDO)
     # Usar datetime aware (sete_dias_atras) para comparar com created_at/updated_at
-    recent_members = Member.objects.filter(created_at__gte=sete_dias_atras).annotate(activity_type=F("created_at"), type=models.Value("new_member", output_field=models.CharField()))
-    recent_donations = Entrada.objects.filter(created_at__gte=sete_dias_atras).annotate(activity_type=F("created_at"), type=models.Value("donation", output_field=models.CharField()))
-    recent_events_created = Event.objects.filter(created_at__gte=sete_dias_atras).annotate(activity_type=F("created_at"), type=models.Value("event_created", output_field=models.CharField()))
-    recent_events_updated = Event.objects.filter(updated_at__gte=sete_dias_atras, updated_at__gt=F("created_at")).annotate(activity_type=F("updated_at"), type=models.Value("event_updated", output_field=models.CharField()))
+    recent_members = Member.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("new_member", output_field=models.CharField()))
+    recent_donations = Income.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("donation", output_field=models.CharField()))
+    recent_events_created = Event.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("event_created", output_field=models.CharField()))
+    recent_events_updated = Event.objects.filter(updated_at__gte=seven_days_ago, updated_at__gt=F("created_at")).annotate(activity_type=F("updated_at"), type=models.Value("event_updated", output_field=models.CharField()))
     # Aniversários de hoje (para Atividade Recente) - Usar agora para activity_type
-    birthdays_today = Member.objects.filter(birth_date__month=hoje.month, birth_date__day=hoje.day).annotate(activity_type=models.Value(agora, output_field=models.DateTimeField()), type=models.Value("birthday", output_field=models.CharField()))
+    birthdays_today = Member.objects.filter(birth_date__month=today.month, birth_date__day=today.day).annotate(activity_type=models.Value(now, output_field=models.DateTimeField()), type=models.Value("birthday", output_field=models.CharField()))
 
     # Combinar e ordenar atividades
     all_activities = sorted(
@@ -58,62 +59,63 @@ def index(request):
     )[:5] # Limitar a 5 atividades recentes
 
     # Dados para o gráfico de membros por igreja
-    membros_por_igreja_qs = Church.objects.annotate(num_membros=Count("members")).order_by("-num_membros")
-    labels_membros_igreja = [igreja.name for igreja in membros_por_igreja_qs]
-    data_membros_igreja = [igreja.num_membros for igreja in membros_por_igreja_qs]
+    members_per_church_qs = Church.objects.annotate(num_members=Count("members")).order_by("-num_members")
+    labels_members_church = [church.name for church in members_per_church_qs]
+    data_members_church = [church.num_members for church in members_per_church_qs]
 
     # Dados para o gráfico financeiro (últimos 6 meses)
-    entradas_ultimos_6_meses = Entrada.objects.filter(
-        data__gte=seis_meses_atras, data__lte=hoje
+    income_last_6_months = Income.objects.filter(
+        date__gte=six_months_ago, date__lte=today
     ).annotate(
-        mes=TruncMonth("data")
-    ).values("mes").annotate(
-        total_entrada=Sum("valor")
-    ).order_by("mes")
+         month=TruncMonth("date")
+    ).values("month").annotate(
+        total_income=Sum("amount") # Updated aggregation
+    ).order_by("month")
 
-    saidas_ultimos_6_meses = Saida.objects.filter(
-        data__gte=seis_meses_atras, data__lte=hoje
+    expenses_last_6_months = Expense.objects.filter(
+        date__gte=six_months_ago, date__lte=today
     ).annotate(
-        mes=TruncMonth("data")
-    ).values("mes").annotate(
-        total_saida=Sum("valor")
-    ).order_by("mes")
+        month=TruncMonth("date")
+    ).values("month").annotate(
+        total_expense=Sum("amount") # Updated aggregation
+    ).order_by("month")
+
 
     # Mapear dados por mês
-    dados_financeiros = {}
-    meses = [(seis_meses_atras + relativedelta(months=i)) for i in range(6)]
-    labels_financeiro = [mes.strftime("%b") for mes in meses] # Formato 'Abr', 'Mai', etc.
+    financial_data = {}
+    months = [(six_months_ago + relativedelta(months=i)) for i in range(6)]
+    labels_financial = [month.strftime("%b") for month in months] # Formato 'Abr', 'Mai', etc.
 
-    for mes in meses:
-        dados_financeiros[mes.strftime("%Y-%m")] = {"entrada": 0, "saida": 0}
+    for month in months:
+        financial_data[month.strftime("%Y-%m")] = {"income": 0, "expense": 0}
 
-    for entrada in entradas_ultimos_6_meses:
-        mes_str = entrada["mes"].strftime("%Y-%m")
-        if mes_str in dados_financeiros:
-            dados_financeiros[mes_str]["entrada"] = float(entrada["total_entrada"])
+    for income_entry in income_last_6_months:
+        month_str = income_entry["month"].strftime("%Y-%m")
+        if month_str in financial_data:
+            financial_data[month_str]["income"] = float(income_entry["total_income"])
 
-    for saida in saidas_ultimos_6_meses:
-        mes_str = saida["mes"].strftime("%Y-%m")
-        if mes_str in dados_financeiros:
-            dados_financeiros[mes_str]["saida"] = float(saida["total_saida"])
+    for expense_entry in expenses_last_6_months:
+        month_str = expense_entry["month"].strftime("%Y-%m")
+        if month_str in financial_data:
+            financial_data[month_str]["expense"] = float(expense_entry["total_expense"])
 
-    data_entradas = [dados_financeiros[mes.strftime("%Y-%m")]["entrada"] for mes in meses]
-    data_saidas = [dados_financeiros[mes.strftime("%Y-%m")]["saida"] for mes in meses]
+    data_income = [financial_data[month.strftime("%Y-%m")]["income"] for month in months]
+    data_expense = [financial_data[month.strftime("%Y-%m")]["expense"] for month in months]
 
     context = {
         "active_menu": "dashboard",
-        "total_membros": total_membros,
-        "total_igrejas": total_igrejas,
-        "eventos_mes": eventos_mes,
-        "arrecadacao_mensal": arrecadacao_mensal,
-        "proximos_eventos": proximos_eventos,
-        "aniversariantes_mes": aniversariantes_mes,
-        "atividades_recentes": all_activities, # Adicionado ao contexto
-        "labels_membros_igreja": json.dumps(labels_membros_igreja),
-        "data_membros_igreja": json.dumps(data_membros_igreja),
-        "labels_financeiro": json.dumps(labels_financeiro),
-        "data_entradas": json.dumps(data_entradas),
-        "data_saidas": json.dumps(data_saidas),
+        "total_members": total_members,
+        "total_churches": total_churches,
+        "events_month": events_month,
+        "monthly_income": monthly_income, # Updated context key
+        "upcoming_events": upcoming_events,
+        "birthdays_month": birthdays_month,
+        "recent_activities": all_activities,
+        "labels_members_church": json.dumps(labels_members_church),
+        "data_members_church": json.dumps(data_members_church),
+        "labels_financial": json.dumps(labels_financial),
+        "data_income": json.dumps(data_income), # Updated context key
+        "data_expense": json.dumps(data_expense), # Updated context key
     }
     
     return render(request, "dashboard/index.html", context)
