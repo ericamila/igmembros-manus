@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from members.models import Member
 from churches.models import Church
 
@@ -82,7 +83,7 @@ class Expense(models.Model):
 class Donation(models.Model):
     member = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True, blank=True, related_name="donations", verbose_name="Membro")
     church = models.ForeignKey(Church, on_delete=models.SET_NULL, null=True, blank=True, related_name="donations", verbose_name="Igreja")
-    reference_date = models.DateField(verbose_name="Mês/Ano de Referência")
+    reference_date = models.DateField(verbose_name="Mês/Ano de Referência", default=timezone.now)
     tithes_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Dízimos")
     offerings_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Ofertas")
     projects_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Projetos Especiais")
