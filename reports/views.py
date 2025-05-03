@@ -1,13 +1,24 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.utils.decorators import method_decorator
+from django.db import transaction # Import transaction
+
+# Updated model imports
 from finances.models import Income, Expense
 from school.models import SchoolClass, Student, Attendance
-from members.models import Member # Importar modelo de Membro
+from members.models import Member
 from django.utils import timezone
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, Count, Q, F, ExpressionWrapper, fields, Value # Importar F, ExpressionWrapper, fields
-from django.db.models.functions import ExtractMonth, ExtractDay, TruncYear # Para aniversariantes
+from django.db.models import Sum, Count
+from django.db.models.functions import ExtractDay, TruncYear
+
+# Import new models and forms for Accountability
+from .models import AccountabilityReport, AccountabilityDocument
+from .forms import AccountabilityReportForm, AccountabilityDocumentFormSet
 
 @login_required
 def index(request):
@@ -17,7 +28,6 @@ def index(request):
     return render(request, "reports/index.html", context)
 
 # --- Relatórios Financeiros ---
-# ... (código dos relatórios financeiros mantido) ...
 @login_required
 def relatorio_movimentacoes_mensais(request):
     today = timezone.now().date()
@@ -44,9 +54,6 @@ def relatorio_movimentacoes_mensais(request):
 
     # Gerar lista de meses/anos para o filtro dropdown
     available_years = range(current_year, current_year - 5, -1) # Últimos 5 anos
-    print("available_years")    
-    print(available_years)
-
     available_months = [
         (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
         (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
@@ -208,7 +215,7 @@ def relatorio_frequencia(request):
 # --- Relatórios de Membros ---
 
 @login_required
-def relatorio_members_estatisticas(request):
+def relatorio_membros_estatisticas(request):
     total_members = Member.objects.count()
     active_members = Member.objects.filter(status="active").count() # Changed filter value
     members_by_status = Member.objects.values("status").annotate(count=Count("id")).order_by("-count")
@@ -321,185 +328,6 @@ def relatorio_contribuicoes_anuais(request):
     }
     return render(request, "reports/contribuicoes_anuais.html", context)
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.utils.decorators import method_decorator
-from django.db import transaction # Import transaction
-
-# Updated model imports
-from finances.models import Income, Expense, Category
-from school.models import SchoolClass, Student, Attendance
-from members.models import Member
-from django.utils import timezone
-from datetime import date
-from dateutil.relativedelta import relativedelta
-from django.db.models import Sum, Count, Q, F, ExpressionWrapper, fields, Value
-from django.db.models.functions import ExtractMonth, ExtractDay, TruncYear
-
-# Import new models and forms for Accountability
-from .models import AccountabilityReport, AccountabilityDocument
-from .forms import AccountabilityReportForm, AccountabilityDocumentFormSet
-
-@login_required
-def index(request):
-    context = {
-        "active_menu": "reports", # Changed to English
-    }
-    return render(request, "reports/index.html", context)
-
-# --- Financial Reports ---
-
-@login_required
-def relatorio_movimentacoes_mensais(request):
-    today = timezone.now().date()
-    current_month = today.month
-    current_year = today.year
-
-    # Filter by month and year (GET parameters)
-    try:
-        month_param = int(request.GET.get("month", current_month))
-        year_param = int(request.GET.get("year", current_year))
-        filter_date = date(year_param, month_param, 1)
-    except (ValueError, TypeError):
-        filter_date = date(current_year, current_month, 1)
-
-    first_day_month = filter_date
-    last_day_month = first_day_month + relativedelta(months=1) - relativedelta(days=1)
-
-    # Updated model and field names
-    incomes = Income.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
-    expenses = Expense.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
-
-    # Updated field names
-    total_incomes = sum(i.amount for i in incomes)
-    total_expenses = sum(e.amount for e in expenses)
-    month_balance = total_incomes - total_expenses
-
-    # Generate list of years/months for filter dropdown (kept Portuguese for now)
-    available_years = range(current_year, current_year - 5, -1)
-    available_months = [
-        (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
-        (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
-        (9, "Setembro"), (10, "Outubro"), (11, "Novembro"), (12, "Dezembro")
-    ]
-
-    context = {
-        "active_menu": "reports",
-        "incomes": incomes, # Updated context key
-        "expenses": expenses, # Updated context key
-        "total_incomes": total_incomes, # Updated context key
-        "total_expenses": total_expenses, # Updated context key
-        "month_balance": month_balance, # Updated context key
-        "selected_month": first_day_month.month, # Updated context key
-        "selected_year": first_day_month.year, # Updated context key
-        "month_name": first_day_month.strftime("%B"), # Kept Portuguese month name for now
-        "available_years": available_years,
-        "available_months": available_months,
-    }
-    return render(request, "relatorios/movimentacoes_mensais.html", context)
-
-@login_required
-def relatorio_dre(request):
-    today = timezone.now().date()
-    current_year = today.year
-
-    # Filter by year (GET parameter)
-    try:
-        year_param = int(request.GET.get("year", current_year))
-    except (ValueError, TypeError):
-        year_param = current_year
-
-    first_day_year = date(year_param, 1, 1)
-    last_day_year = date(year_param, 12, 31)
-
-    # Group incomes by category
-    # Updated model and field names
-    incomes_by_category = Income.objects.filter(
-        date__gte=first_day_year, date__lte=last_day_year
-    ).values("category__name").annotate(total=Sum("amount")).order_by("-total")
-
-    # Group expenses by category
-    # Updated model and field names
-    expenses_by_category = Expense.objects.filter(
-        date__gte=first_day_year, date__lte=last_day_year
-    ).values("category__name").annotate(total=Sum("amount")).order_by("-total")
-
-    # Updated variable names
-    total_revenue = sum(item["total"] for item in incomes_by_category) or 0
-    total_expenditure = sum(item["total"] for item in expenses_by_category) or 0
-    net_result = total_revenue - total_expenditure
-
-    # Generate list of years for filter dropdown
-    available_years = range(current_year, current_year - 5, -1)
-
-    context = {
-        "active_menu": "reports",
-        "selected_year": year_param,
-        "incomes_by_category": incomes_by_category, # Updated context key
-        "expenses_by_category": expenses_by_category, # Updated context key
-        "total_revenue": total_revenue, # Updated context key
-        "total_expenditure": total_expenditure, # Updated context key
-        "net_result": net_result, # Updated context key
-        "available_years": available_years,
-    }
-    return render(request, "relatorios/dre.html", context)
-
-@login_required
-def relatorio_balanco(request):
-    # Simplified balance sheet focusing on accumulated cash balance
-    today = timezone.now().date()
-
-    # Filter by end date (GET parameter)
-    try:
-        end_date_str = request.GET.get("end_date", today.strftime("%Y-%m-%d")) # Changed param name
-        end_date = date.fromisoformat(end_date_str)
-    except (ValueError, TypeError):
-        end_date = today
-
-    # Updated model and field names
-    total_incomes_accumulated = Income.objects.filter(date__lte=end_date).aggregate(total=Sum("amount"))["total"] or 0
-    total_expenses_accumulated = Expense.objects.filter(date__lte=end_date).aggregate(total=Sum("amount"))["total"] or 0
-    accumulated_balance = total_incomes_accumulated - total_expenses_accumulated
-
-    # Simplified assets and liabilities/equity (using English keys)
-    assets = {
-        "Cash/Bank (Accumulated Balance)": accumulated_balance,
-    }
-    liabilities_equity = {
-        "Equity (Accumulated Result)": accumulated_balance, # Simplification
-    }
-
-    context = {
-        "active_menu": "reports",
-        "end_date": end_date, # Updated context key
-        "end_date_str": end_date.strftime("%Y-%m-%d"),
-        "assets": assets,
-        "liabilities_equity": liabilities_equity, # Updated context key
-        "total_assets": sum(assets.values()),
-        "total_liabilities_equity": sum(liabilities_equity.values()), # Updated context key
-    }
-    return render(request, "relatorios/balanco.html", context)
-
-# --- Sunday School Reports ---
-
-@login_required
-def relatorio_alunos_por_turma(request):
-    # Updated variable names
-    classes = SchoolClass.objects.annotate(num_students=Count("students")).order_by("name")
-    total_students = Student.objects.count()
-
-    context = {
-        "active_menu": "reports",
-        "classes": classes, # Updated context key
-        "total_students": total_students,
-    }
-    return render(request, "relatorios/alunos_por_turma.html", context)
-
-@login_required
-def relatorio_frequencia(request):
     today = timezone.now().date()
     # Updated variable names
     classes = SchoolClass.objects.all().order_by("name")
@@ -543,69 +371,6 @@ def relatorio_frequencia(request):
     }
     return render(request, "relatorios/frequencia.html", context)
 
-# --- Member Reports ---
-
-@login_required
-def relatorio_membros_estatisticas(request):
-    total_members = Member.objects.count()
-    active_members = Member.objects.filter(status="active").count() # Changed filter value
-    members_by_status = Member.objects.values("status").annotate(count=Count("id")).order_by("-count")
-    members_by_gender = Member.objects.values("gender").annotate(count=Count("id")).order_by("-count")
-    members_by_marital_status = Member.objects.values("marital_status").annotate(count=Count("id")).order_by("-count")
-    members_by_type = Member.objects.values("member_type").annotate(count=Count("id")).order_by("-count")
-
-    # Use English keys from choices
-    status_map = dict(Member.STATUS_CHOICES)
-    gender_map = dict(Member.GENDER_CHOICES)
-    marital_map = dict(Member.MARITAL_STATUS_CHOICES)
-    type_map = dict(Member.MEMBER_TYPE_CHOICES)
-
-    context = {
-        "active_menu": "reports",
-        "total_members": total_members,
-        "active_members": active_members, # Updated context key
-        "members_by_status": [(status_map.get(item["status"], item["status"]), item["count"]) for item in members_by_status],
-        "members_by_gender": [(gender_map.get(item["gender"], item["gender"]), item["count"]) for item in members_by_gender],
-        "members_by_marital_status": [(marital_map.get(item["marital_status"], item["marital_status"]), item["count"]) for item in members_by_marital_status],
-        "members_by_type": [(type_map.get(item["member_type"], item["member_type"]), item["count"]) for item in members_by_type],
-    }
-    return render(request, "relatorios/membros_estatisticas.html", context)
-
-@login_required
-def relatorio_aniversariantes(request):
-    today = timezone.now().date()
-    current_month = today.month
-
-    # Filter by month (GET parameter)
-    try:
-        month_param = int(request.GET.get("month", current_month))
-    except (ValueError, TypeError):
-        month_param = current_month
-
-    # Updated variable name
-    birthdays = Member.objects.filter(birth_date__month=month_param)\
-                                    .annotate(day=ExtractDay("birth_date"))\
-                                    .order_by("day", "name")
-
-    # Kept Portuguese month names for dropdown for now
-    available_months = [
-        (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
-        (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
-        (9, "Setembro"), (10, "Outubro"), (11, "Novembro"), (12, "Dezembro")
-    ]
-    month_name = dict(available_months).get(month_param, "")
-
-    context = {
-        "active_menu": "reports",
-        "birthdays": birthdays, # Updated context key
-        "selected_month": month_param,
-        "month_name": month_name,
-        "available_months": available_months,
-    }
-    return render(request, "relatorios/aniversariantes.html", context)
-
-@login_required
-def relatorio_contribuicoes_anuais(request):
     today = timezone.now().date()
     current_year = today.year
     all_members = Member.objects.filter(status="active").order_by("name") # Get active members for filter
