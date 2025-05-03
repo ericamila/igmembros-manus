@@ -2,111 +2,218 @@
 
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Templo Digital{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Templo Digital
+      {% endblock %}
+    </title>
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
     {% tailwind_css %}
     {# Incluir Alpine.js para interatividade, se necessário mais tarde #}
     {# <script src="//unpkg.com/alpinejs" defer></script> #}
-    {% block extra_head %}{% endblock %}
-</head>
-<body class="bg-gray-100 flex min-h-screen">
+    {% block extra_head %}
 
+    {% endblock %}
+  </head>
+  <body class="bg-gray-100 flex min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-800 text-white flex flex-col fixed inset-y-0 left-0">
+    {% if user.is_authenticated %}
+      <aside class="w-64 bg-gray-800 text-white flex flex-col fixed inset-y-0 left-0">
         <div class="p-4 border-b border-gray-700">
-            <h1 class="text-xl font-semibold">Templo Digital</h1>
+          <h1 class="text-xl font-semibold">Templo Digital</h1>
         </div>
         <nav class="flex-grow p-4">
-            <ul class="space-y-2">
-                <li><a href="{% url 'dashboard:index' %}" class="flex items-center p-2 {% if active_menu == 'dashboard' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/dashboard.html' %}
-                    <span class="ml-3">Dashboard</span></a></li>
-                <li><a href="{% url 'churches:church_list' %}" class="flex items-center p-2 {% if active_menu == 'churches' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/churches.html' %}
-                    <span class="ml-3">Igrejas</span></a></li>
-                <li><a href="{% url 'members:member_list' %}" class="flex items-center p-2 {% if active_menu == 'members' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/members.html' %}
-                    <span class="ml-3">Membros</span></a></li>
-                <li><a href="{% url 'events:event_list' %}" class="flex items-center p-2 {% if active_menu == 'events' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/events.html' %}
-                    <span class="ml-3">Eventos</span></a></li>
-                <li><a href="{% url 'finances:income_list' %}" class="flex items-center p-2 {% if active_menu == 'finances' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/finances.html' %}
-                    <span class="ml-3">Finanças</span></a></li>
-                <li><a href="{% url 'school:school_class_list' %}" class="flex items-center p-2 {% if active_menu == 'school' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/school.html' %}
-                    <span class="ml-3">Escola</span></a></li>
-                <li><a href="{% url 'reports:index' %}" class="flex items-center p-2 {% if active_menu == 'reports' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/reports.html' %}
-                    <span class="ml-3">Relatórios</span></a></li>
-                {% if user.role == 'admin' %}
-                <li><a href="{% url 'users:user_list' %}" class="flex items-center p-2 {% if active_menu == 'users' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
-                    {% include 'icons/users.html' %}
-                    <span class="ml-3">Usuários</span></a></li>
-                {% endif %}
-            </ul>
+          <ul class="space-y-2">
+            <li>
+              <a href="{% url 'dashboard:index' %}"
+                class="flex items-center p-2 {% if active_menu == 'dashboard' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/dashboard.html' %}
+                <span class="ml-3">Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'churches:church_list' %}"
+                class="flex items-center p-2 {% if active_menu == 'churches' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/churches.html' %}
+                <span class="ml-3">Igrejas</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'members:member_list' %}"
+                class="flex items-center p-2 {% if active_menu == 'members' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/members.html' %}
+                <span class="ml-3">Membros</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'events:event_list' %}"
+                class="flex items-center p-2 {% if active_menu == 'events' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/events.html' %}
+                <span class="ml-3">Eventos</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'finances:income_list' %}"
+                class="flex items-center p-2 {% if active_menu == 'finances' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/finances.html' %}
+                <span class="ml-3">Finanças</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'school:school_class_list' %}"
+                class="flex items-center p-2 {% if active_menu == 'school' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/school.html' %}
+                <span class="ml-3">Escola</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'reports:index' %}"
+                class="flex items-center p-2 {% if active_menu == 'reports' %}
+                  
+                  bg-purple-700 text-white
+
+                {% else %}
+                  
+                  text-gray-300 hover:bg-gray-700 hover:text-white
+
+                {% endif %} rounded-md">
+                {% include 'icons/reports.html' %}
+                <span class="ml-3">Relatórios</span>
+              </a>
+            </li>
+            {% if user.role == 'admin' %}
+              <li>
+                <a href="{% url 'users:user_list' %}"
+                  class="flex items-center p-2 {% if active_menu == 'users' %}
+                    
+                    bg-purple-700 text-white
+
+                  {% else %}
+                    
+                    text-gray-300 hover:bg-gray-700 hover:text-white
+
+                  {% endif %} rounded-md">
+                  {% include 'icons/users.html' %}
+                  <span class="ml-3">Usuários</span>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
         </nav>
         <div class="p-4 border-t border-gray-700">
-            <a href="{% url 'users:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
-                {% include 'icons/profile.html' %}
-                <span class="ml-3">Meu Perfil</span>
-            </a>
-            <a href="{% url 'users:logout' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+          <a href="{% url 'users:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
+            {% include 'icons/profile.html' %}
+            <span class="ml-3">Meu Perfil</span>
+          </a>
+
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <a href="#" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+              <button type="submit"  class="flex items-center">
                 {% include 'icons/logout.html' %}
-                <span class="ml-3">Sair</span></a>
+                <span class="ml-3">Sair</span>
+              </button>
+            </a>
+          </form>
         </div>
-    </aside>
+      </aside>
+    {% endif %}
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col ml-64"> <!-- ml-64 para compensar a largura da sidebar -->
+    <div class="flex-1 flex flex-col ml-64">
+      <!-- ml-64 para compensar a largura da sidebar -->
 
-        <!-- Header -->
-        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-semibold text-gray-800">{% block page_title %}Dashboard{% endblock %}</h1>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Pesquisar..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                        {% include 'icons/pesquisar.html' %}
-                    </span>
-                </div>
-                <button class="text-gray-500 hover:text-gray-700">
-                    {% include 'icons/atualizar.html' %}
-                </button>
-                <button class="text-gray-500 hover:text-gray-700">
-                    {% include 'icons/notificacoes.html' %}
-                </button>
-                <div class="flex items-center space-x-2">
-                    <span class="text-gray-700">{{ user.get_full_name|default:user.username }}</span>
-                    {% if user.profile_image %}
-                    <img src="{{ user.profile_image.url }}" alt="User Avatar" class="w-8 h-8 rounded-full">
-                    {% else %}
-                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
-                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </header>
-
-        <!-- Page Content -->
-        <main class="flex-grow p-6">
-            {% block content %}
-            <p class="text-gray-700">Conteúdo principal da página.</p>
+      <!-- Header -->
+      <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-semibold text-gray-800">
+            {% block page_title %}
+              Dashboard
             {% endblock %}
-        </main>
+          </h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <input type="text" placeholder="Pesquisar..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600" />
+            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">{% include 'icons/pesquisar.html' %}</span>
+          </div>
+          <button class="text-gray-500 hover:text-gray-700">{% include 'icons/atualizar.html' %}</button>
+          <button class="text-gray-500 hover:text-gray-700">{% include 'icons/notificacoes.html' %}</button>
+          <div class="flex items-center space-x-2">
+            <span class="text-gray-700">{{ user.get_full_name|default:user.username }}</span>
+            {% if user.profile_image %}
+              <img src="{{ user.profile_image.url }}" alt="User Avatar" class="w-8 h-8 rounded-full" />
+            {% else %}
+              <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </header>
 
-        <!-- Footer -->
-        <footer class="bg-white text-center p-4 text-sm text-gray-500 mt-auto">
-            <p>Templo Digital © {% now "Y" %} - Sistema de Gestão para Igrejas</p>
-        </footer>
+      <!-- Page Content -->
+      <main class="flex-grow p-6">
+        {% block content %}
+          <p class="text-gray-700">Conteúdo principal da página.</p>
+        {% endblock %}
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-white text-center p-4 text-sm text-gray-500 mt-auto">
+        <p>
+          Templo Digital ©{% now 'Y' %}- Sistema de Gestão para Igrejas
+        </p>
+      </footer>
     </div>
-
-</body>
+  </body>
 </html>
-
