@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -27,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-f07olffi-9n4pxcq24g^fa3tv838w+9)^9$3ktbdmxov1)@-i=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Set DEBUG based on environment variable (defaults to False for production)
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 #ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1']
@@ -95,22 +97,43 @@ WSGI_APPLICATION = 'templo_digital_django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if os.environ.get('DJANGO_DEBUG')== 'True':
+DATABASE_URL = os.environ.get('DATABASE_URL')
+DB_HOST = os.environ.get('DB_HOST')
+
+# VERIFICA SE DATABASE_URL É NULO
+print(" DEBUG: ", DEBUG)
+print(" DATABASE_URL: ", DATABASE_URL)
+print(" DB_HOST: ", DB_HOST)
+if DATABASE_URL:
+    print(" AAAAAAAAAA Using DATABASE_URL for database configuration.")
+    # Production/Staging (e.g., Vercel): Use PostgreSQL via DATABASE_URL
+    # dj_database_url will parse the URL and handle special characters
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=False) # Set ssl_require based on Supabase needs
     }
-else:
+    # Ensure Supabase Pooler compatibility if needed (optional)
+    # DATABASES['default']['OPTIONS'] = {'options': '-c statement_timeout=15000'}
+elif DB_HOST:
+    print(" BBBBBBBBBBBBB Using individual environment variables for database configuration.")
+    # Local testing against Supabase/PostgreSQL using individual env vars
+    # This avoids issues with shell expansion of special characters in DATABASE_URL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME'),
-            'USER': os.getenv('DB_USER'),
-            'PASSWORD': os.getenv('DB_PASSWORD'),
-            'HOST': os.getenv('DB_HOST'),
-            'PORT': os.getenv('DB_PORT'),
+            'NAME': os.environ.get('DB_NAME', 'postgres'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+else:
+    print(" CCCCCCCCCCC Using SQLite for database configuration.")
+    # Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 

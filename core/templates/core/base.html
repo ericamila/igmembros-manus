@@ -160,12 +160,12 @@
 
           <form method="post" action="{% url 'users:logout' %}">
             {% csrf_token %}
-            <a href="#" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
-              <button type="submit"  class="flex items-center">
+            <span class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md cursor:pointer">
+              <button type="submit"  class="flex items-center w-full">
                 {% include 'icons/logout.html' %}
                 <span class="ml-3">Sair</span>
               </button>
-            </a>
+            </span>
           </form>
         </div>
       </aside>
