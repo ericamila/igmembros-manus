@@ -49,7 +49,7 @@
         <div class="flex justify-between items-start">
             <div>
                 <p class="text-sm text-gray-500 mb-1">Eventos do Mês</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ events_mes|default:"0" }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800">{{ events_month|default:"0" }}</h3>
             </div>
             <div class="p-3 bg-green-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,7 +67,7 @@
         <div class="flex justify-between items-start">
             <div>
                 <p class="text-sm text-gray-500 mb-1">Arrecadação Mensal</p>
-                <h3 class="text-2xl font-bold text-gray-800">R$ {{ arrecadacao_mensal|default:"0"|intcomma }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800">R$ {{ monthly_income|default:"0"|intcomma }}</h3>
             </div>
             <div class="p-3 bg-yellow-100 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -88,9 +88,9 @@
         <a href="{% url 'reports:aniversariantes' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver relatório →</a>
     </div>
     
-    {% if aniversariantes_mes %}
+    {% if birthdays_month %}
     <ul class="divide-y divide-gray-200">
-        {% for member in aniversariantes_mes %}
+        {% for member in birthdays_month %}
         <li class="py-3 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
@@ -133,9 +133,9 @@
     <!-- Atividade Recente -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Atividade Recente</h2>
-        {% if atividades_recentes %}
+        {% if recent_activities %}
         <ul class="divide-y divide-gray-200">
-            {% for activity in atividades_recentes %}
+            {% for activity in recent_activities %}
             <li class="py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <!-- Ícone (Placeholder) -->
@@ -197,9 +197,9 @@
             <a href="{% url 'events:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
         </div>
         
-        {% if proximos_events %}
+        {% if upcoming_events %}
         <ul class="divide-y divide-gray-200">
-            {% for evento in proximos_events %}
+            {% for evento in upcoming_events %}
             <li class="py-3">
                 <div class="flex items-center justify-between mb-1">
                     <a href="{% url 'events:event_detail' evento.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ evento.title }}</a>
@@ -268,7 +268,7 @@
     const financeiroChart = new Chart(financeiroCtx, {
         type: 'line', // Usando gráfico de linha para incomes e saídas
         data: {
-            labels: {{ labels_financeiro|safe }},
+            labels: {{ labels_financial|safe }},
             datasets: [
                 {
                     label: 'Entradas',
@@ -280,7 +280,7 @@
                 },
                 {
                     label: 'Saídas',
-                    data: {{ data_saidas|safe }},
+                    data: {{ data_expense|safe }},
                     borderColor: 'rgba(239, 68, 68, 1)', // Vermelho
                     backgroundColor: 'rgba(239, 68, 68, 0.2)',
                     tension: 0.3,
