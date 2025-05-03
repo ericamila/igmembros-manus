@@ -33,6 +33,10 @@ def index(request):
     # Calcular arrecadação mensal (card)
     income_current_month = Income.objects.filter(date__gte=first_day_current_month, date__lte=today)
     monthly_income = income_current_month.aggregate(total=Sum("amount"))["total"] or 0
+
+    # Calcular despesas mensais (card)
+    expenses_current_month = Expense.objects.filter(date__gte=first_day_current_month, date__lte=today)
+    monthly_expense = expenses_current_month.aggregate(total=Sum("amount"))["total"] or 0
     
     # Próximos eventos (já existia, manter)
     upcoming_events = Event.objects.filter(date__gte=today).order_by("date", "time")[:5]
@@ -99,6 +103,7 @@ def index(request):
         if month_str in financial_data:
             financial_data[month_str]["expense"] = float(expense_entry["total_expense"])
 
+
     data_income = [financial_data[month.strftime("%Y-%m")]["income"] for month in months]
     data_expense = [financial_data[month.strftime("%Y-%m")]["expense"] for month in months]
 
@@ -107,17 +112,20 @@ def index(request):
         "total_members": total_members,
         "total_churches": total_churches,
         "events_month": events_month,
-        "monthly_income": monthly_income, # Updated context key
+        "monthly_income": monthly_income, 
+        "monthly_expense": monthly_expense,
         "upcoming_events": upcoming_events,
         "birthdays_month": birthdays_month,
         "recent_activities": all_activities,
         "labels_members_church": json.dumps(labels_members_church),
         "data_members_church": json.dumps(data_members_church),
         "labels_financial": json.dumps(labels_financial),
-        "data_income": json.dumps(data_income), # Updated context key
-        "data_expense": json.dumps(data_expense), # Updated context key
+        "data_income": json.dumps(data_income), 
+        "data_expense": json.dumps(data_expense), 
     }
     
+    #print("Context data:", context)
+
     return render(request, "dashboard/index.html", context)
 
 

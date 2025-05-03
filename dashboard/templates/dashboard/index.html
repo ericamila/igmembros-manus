@@ -1,235 +1,451 @@
-{% extends 'core/base.html' %} 
+{% extends 'core/base.html' %}
 {% load static %}
 {% load humanize %}
 {% load tz %}
 
-{% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block title %}
+  Dashboard
+{% endblock %}
+{% block page_title %}
+  Dashboard
+{% endblock %}
+{% block extra_head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
     <!-- Card de Membros -->
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm text-gray-500 mb-1">Total de Membros</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ total_members|default:"0" }}</h3>
-            </div>
-            <div class="p-3 bg-blue-100 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-            </div>
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Total de Membros</p>
+          <h3 class="text-2xl font-bold text-gray-800">{{ total_members|default:'0' }}</h3>
         </div>
-        <div class="mt-4">
-            <a href="{% url 'members:member_list' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver todos os membros →</a>
+        <div class="p-3 bg-blue-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
         </div>
+      </div>
+      <div class="mt-4">
+        <a href="{% url 'members:member_list' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver todos os membros →</a>
+      </div>
     </div>
 
     <!-- Card de Igrejas -->
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm text-gray-500 mb-1">Total de Igrejas</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ total_churches|default:"0" }}</h3>
-            </div>
-            <div class="p-3 bg-purple-100 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </div>
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Total de Igrejas</p>
+          <h3 class="text-2xl font-bold text-gray-800">{{ total_churches|default:'0' }}</h3>
         </div>
-        <div class="mt-4">
-            <a href="{% url 'churches:church_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todas as igrejas →</a>
+        <div class="p-3 bg-purple-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
         </div>
+      </div>
+      <div class="mt-4">
+        <a href="{% url 'churches:church_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todas as igrejas →</a>
+      </div>
+    </div>
+
+    <!-- Card de Finanças Receita -->
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Arrecadação Mensal</p>
+          <h3 class="text-2xl font-bold text-gray-800">R$ {{ monthly_income|default:'0'|intcomma }}</h3>
+        </div>
+        <div class="p-3 bg-yellow-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="mt-4">
+        <a href="{% url 'finances:income_list' %}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">Ver finanças →</a>
+      </div>
+    </div>
+
+    <!-- Card de Finanças Despesa -->
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Despesa Mensal</p>
+          <h3 class="text-2xl font-bold text-gray-800">R$ {{ monthly_expense|default:'0'|intcomma }}</h3>
+        </div>
+        <div class="p-3 bg-yellow-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="mt-4">
+        <a href="{% url 'finances:expense_list' %}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">Ver finanças →</a>
+      </div>
+    </div>
+
+    <!-- Aniversariantes do Mês -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 mt-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Aniversariantes do Mês</h2>
+        <a href="{% url 'reports:aniversariantes' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver relatório →</a>
+      </div>
+
+      {% if birthdays_month %}
+        <ul class="divide-y divide-gray-200">
+          {% for member in birthdays_month %}
+            <li class="py-3 flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600 font-semibold">{{ member.birth_date|date:'d' }}</span>
+                <a href="{% url 'members:member_detail' member.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ member.name }}</a>
+              </div>
+              <span class="text-sm text-gray-500">{{ member.phone|default:'-' }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="text-center py-4 text-gray-500">Nenhum aniversariante neste mês.</div>
+      {% endif %}
     </div>
 
     <!-- Card de Eventos -->
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm text-gray-500 mb-1">Eventos do Mês</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ events_month|default:"0" }}</h3>
-            </div>
-            <div class="p-3 bg-green-100 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </div>
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">Eventos do Mês</p>
+          <h3 class="text-2xl font-bold text-gray-800">{{ events_month|default:'0' }}</h3>
         </div>
-        <div class="mt-4">
-            <a href="{% url 'events:event_list' %}" class="text-sm text-green-600 hover:text-green-800 font-medium">Ver todos os eventos →</a>
+        <div class="p-3 bg-green-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
         </div>
+      </div>
+      <div class="mt-4">
+        <a href="{% url 'events:event_list' %}" class="text-sm text-green-600 hover:text-green-800 font-medium">Ver todos os eventos →</a>
+      </div>
     </div>
 
-    <!-- Card de Finanças -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm text-gray-500 mb-1">Arrecadação Mensal</p>
-                <h3 class="text-2xl font-bold text-gray-800">R$ {{ monthly_income|default:"0"|intcomma }}</h3>
-            </div>
-            <div class="p-3 bg-yellow-100 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-        </div>
-        <div class="mt-4">
-            <a href="{% url 'finances:income_list' %}" class="text-sm text-yellow-600 hover:text-yellow-800 font-medium">Ver finanças →</a>
-        </div>
-    </div>
-</div>
-
-<!-- Aniversariantes do Mês -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-6">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-800">Aniversariantes do Mês</h2>
-        <a href="{% url 'reports:aniversariantes' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver relatório →</a>
-    </div>
-    
-    {% if birthdays_month %}
-    <ul class="divide-y divide-gray-200">
-        {% for member in birthdays_month %}
-        <li class="py-3 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600 font-semibold">
-                    {{ member.birth_date|date:"d" }}
-                </span>
-                <a href="{% url 'members:member_detail' member.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ member.name }}</a>
-            </div>
-            <span class="text-sm text-gray-500">{{ member.phone|default:"-" }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <div class="text-center py-4 text-gray-500">
-        Nenhum aniversariante neste mês.
-    </div>
-    {% endif %}
-</div>
-
-<!-- Gráficos e Estatísticas -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Gráficos e Estatísticas -->
     <!-- Gráfico de Membros por Igreja -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Membros por Igreja</h2>
-        <div class="h-64">
-            <canvas id="membersPorIgrejaChart"></canvas>
-        </div>
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Membros por Igreja</h2>
+      <div class="h-64">
+        <canvas id="membersPorIgrejaChart"></canvas>
+        <script>
+            const membersPorIgrejaCtx = document.getElementById('membersPorIgrejaChart').getContext('2d');
+            const membersPorIgrejaChart = new Chart(membersPorIgrejaCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ labels_members_church|safe }},
+                    datasets: [{
+                        label: 'Nº de Membros',
+                        data: {{ data_members_church|safe }},
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)', // Cor roxa similar à referência
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0 // Garante que o eixo Y mostre apenas números inteiros
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // Oculta a legenda conforme a referência
+                        }
+                    }
+                }
+            });
+        </script>
+      </div>
     </div>
-    
+
     <!-- Gráfico de Finanças -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Relatório Financeiro (Últimos 6 Meses)</h2>
-        <div class="h-64">
-            <canvas id="financeiroChart"></canvas> {# Changed ID #}
-        </div>
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Relatório Financeiro (Últimos 6 Meses)</h2>
+      <div class="h-64">
+        <canvas id="financeiroChart"></canvas> {# Changed ID #}
+        <script>
+            const financeiroCtx = document.getElementById('financeiroChart').getContext('2d');
+            const financeiroChart = new Chart(financeiroCtx, {
+                type: 'line', // Usando gráfico de linha para incomes e saídas
+                data: {
+                    labels: {{ labels_financial|safe }},
+                    datasets: [
+                        {
+                            label: 'Entradas',
+                            data: {{ data_income|safe }},
+                            borderColor: 'rgba(59, 130, 246, 1)', // Azul
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            tension: 0.3, // Suaviza a linha
+                            fill: true // Preenche a área abaixo da linha (similar à referência)
+                        },
+                        {
+                            label: 'Saídas',
+                            data: {{ data_expense|safe }},
+                            borderColor: 'rgba(239, 68, 68, 1)', // Vermelho
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+          </script>
+      </div>
     </div>
-</div>
 
-<!-- Atividades Recentes e Próximos Eventos (NOVO LAYOUT) -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Atividades Recentes e Próximos Eventos (NOVO LAYOUT) -->
     <!-- Atividade Recente -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Atividade Recente</h2>
-        {% if recent_activities %}
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Atividade Recente</h2>
+      {% if recent_activities %}
         <ul class="divide-y divide-gray-200">
-            {% for activity in recent_activities %}
+          {% for activity in recent_activities %}
             <li class="py-3 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <!-- Ícone (Placeholder) -->
-                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full 
-                        {% if activity.type == 'new_member' %}bg-blue-100 text-blue-600
-                        {% elif activity.type == 'donation' %}bg-green-100 text-green-600
-                        {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}bg-purple-100 text-purple-600
-                        {% elif activity.type == 'birthday' %}bg-yellow-100 text-yellow-600
-                        {% else %}bg-gray-100 text-gray-600{% endif %}">
+              <div class="flex items-center space-x-3">
+                <!-- Ícone (Placeholder) -->
+                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full 
                         {% if activity.type == 'new_member' %}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
-                        {% elif activity.type == 'donation' %}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-.567-.267zM11.567 7.15c.22.07.412.164.567.267v1.698a2.5 2.5 0 01-.567-.267z" /><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.5 4.5 0 00-1.831.666l-.296-.17c-.396-.23-.912.01-.912.457v1.17c0 .447.516.687.912.457l.296-.17A4.5 4.5 0 0010 8.493v1.018a4.5 4.5 0 00-1.831.667l-.296-.17c-.396-.23-.912.01-.912.457v1.17c0 .447.516.687.912.457l.296-.17A4.5 4.5 0 0010 12.493v.092a1 1 0 102 0v-.092a4.5 4.5 0 001.831-.666l.296.17c.396.23.912-.01.912-.457v-1.17c0-.447-.516-.687-.912-.457l-.296.17A4.5 4.5 0 0012 9.511V8.493a4.5 4.5 0 001.831-.667l.296.17c.396.23.912-.01.912-.457v-1.17c0-.447-.516-.687-.912-.457l-.296.17A4.5 4.5 0 0012 5.093V5z" clip-rule="evenodd" /></svg>
-                        {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
-                        {% elif activity.type == 'birthday' %}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 015.292-2.121C10.92 2.404 11.63 3 12.5 3c.87 0 1.58.596 2.208 1.879A3 3 0 1115 10.5V12a1 1 0 11-2 0v-1.5a3 3 0 01-5.292-2.121C7.08 7.596 6.37 7 5.5 7 .63 7 .92 6.404 4.292 5.121A3 3 0 015 5zm10 1a1 1 0 10-2 0v2.586l-1.293-1.293a1 1 0 00-1.414 1.414L12 10.414l-1.293-1.293a1 1 0 00-1.414 1.414L10.586 12 9.293 13.293a1 1 0 101.414 1.414L12 13.414l1.293 1.293a1 1 0 001.414-1.414L13.414 12l1.293-1.293a1 1 0 00-1.414-1.414L12 10.586V6z" clip-rule="evenodd" /></svg>
-                        {% else %}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-                        {% endif %}
-                    </span>
-                    <div class="text-sm">
-                        {% if activity.type == 'new_member' %}
-                        <p class="font-medium text-gray-900">Novo membro registrado</p>
-                        <p class="text-gray-500">{{ activity.name }} completou seu cadastro</p>
-                        {% elif activity.type == 'donation' %}
-                        <p class="font-medium text-gray-900">Doação recebida</p>
-                        <p class="text-gray-500">R$ {{ activity.valor|intcomma }} - {{ activity.descricao }}</p>
-                        {% elif activity.type == 'event_created' %}
-                        <p class="font-medium text-gray-900">Evento criado</p>
-                        <p class="text-gray-500">{{ activity.title }} - {{ activity.date|date:"d/m/Y" }}</p>
-                        {% elif activity.type == 'event_updated' %}
-                        <p class="font-medium text-gray-900">Evento atualizado</p>
-                        <p class="text-gray-500">{{ activity.title }}</p>
-                        {% elif activity.type == 'birthday' %}
-                        <p class="font-medium text-gray-900">Aniversário</p>
-                        <p class="text-gray-500">{{ activity.name }} faz aniversário hoje</p>
-                        {% else %}
-                        <p class="font-medium text-gray-900">Atividade</p>
-                        <p class="text-gray-500">Detalhes da atividade</p>
-                        {% endif %}
-                    </div>
+                    
+                    
+                    
+                  
+                    
+                    bg-blue-100 text-blue-600
+
+
+
+
+
+
+                  {% elif activity.type == 'donation' %}
+                    
+                    
+                    
+                  
+                    
+                    bg-green-100 text-green-600
+
+
+
+
+
+
+                  {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}
+                    
+                    
+                    
+                  
+                    
+                    bg-purple-100 text-purple-600
+
+
+
+
+
+
+                  {% elif activity.type == 'birthday' %}
+                    
+                    
+                    
+                  
+                    
+                    bg-yellow-100 text-yellow-600
+
+
+
+
+
+
+                  {% else %}
+                    
+                    
+                    
+                  
+                    
+                    bg-gray-100 text-gray-600
+
+
+
+
+
+                  {% endif %}">
+                  {% if activity.type == 'new_member' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                  {% elif activity.type == 'donation' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-.567-.267zM11.567 7.15c.22.07.412.164.567.267v1.698a2.5 2.5 0 01-.567-.267z" />
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.5 4.5 0 00-1.831.666l-.296-.17c-.396-.23-.912.01-.912.457v1.17c0 .447.516.687.912.457l.296-.17A4.5 4.5 0 0010 8.493v1.018a4.5 4.5 0 00-1.831.667l-.296-.17c-.396-.23-.912.01-.912.457v1.17c0 .447.516.687.912.457l.296-.17A4.5 4.5 0 0010 12.493v.092a1 1 0 102 0v-.092a4.5 4.5 0 001.831-.666l.296.17c.396.23.912-.01.912-.457v-1.17c0-.447-.516-.687-.912-.457l-.296.17A4.5 4.5 0 0012 9.511V8.493a4.5 4.5 0 001.831-.667l.296.17c.396.23.912-.01.912-.457v-1.17c0-.447-.516-.687-.912-.457l-.296.17A4.5 4.5 0 0012 5.093V5z" clip-rule="evenodd" />
+                    </svg>
+                  {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                    </svg>
+                  {% elif activity.type == 'birthday' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5 5a3 3 0 015.292-2.121C10.92 2.404 11.63 3 12.5 3c.87 0 1.58.596 2.208 1.879A3 3 0 1115 10.5V12a1 1 0 11-2 0v-1.5a3 3 0 01-5.292-2.121C7.08 7.596 6.37 7 5.5 7 .63 7 .92 6.404 4.292 5.121A3 3 0 015 5zm10 1a1 1 0 10-2 0v2.586l-1.293-1.293a1 1 0 00-1.414 1.414L12 10.414l-1.293-1.293a1 1 0 00-1.414 1.414L10.586 12 9.293 13.293a1 1 0 101.414 1.414L12 13.414l1.293 1.293a1 1 0 001.414-1.414L13.414 12l1.293-1.293a1 1 0 00-1.414-1.414L12 10.586V6z" clip-rule="evenodd" />
+                    </svg>
+                  {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                  {% endif %}
+                </span>
+                <div class="text-sm">
+                  {% if activity.type == 'new_member' %}
+                    <p class="font-medium text-gray-900">Novo membro registrado</p>
+                    <p class="text-gray-500">{{ activity.name }} completou seu cadastro</p>
+                  {% elif activity.type == 'donation' %}
+                    <p class="font-medium text-gray-900">Doação recebida</p>
+                    <p class="text-gray-500">R$ {{ activity.valor|intcomma }} - {{ activity.descricao }}</p>
+                  {% elif activity.type == 'event_created' %}
+                    <p class="font-medium text-gray-900">Evento criado</p>
+                    <p class="text-gray-500">{{ activity.title }} - {{ activity.date|date:'d/m/Y' }}</p>
+                  {% elif activity.type == 'event_updated' %}
+                    <p class="font-medium text-gray-900">Evento atualizado</p>
+                    <p class="text-gray-500">{{ activity.title }}</p>
+                  {% elif activity.type == 'birthday' %}
+                    <p class="font-medium text-gray-900">Aniversário</p>
+                    <p class="text-gray-500">{{ activity.name }} faz aniversário hoje</p>
+                  {% else %}
+                    <p class="font-medium text-gray-900">Atividade</p>
+                    <p class="text-gray-500">Detalhes da atividade</p>
+                  {% endif %}
                 </div>
-                <span class="text-xs text-gray-500">{{ activity.activity_type|timesince }} atrás</span>
+              </div>
+              <span class="text-xs text-gray-500">{{ activity.activity_type|timesince }} atrás</span>
             </li>
-            {% endfor %}
+          {% endfor %}
         </ul>
-        {% else %}
-        <div class="text-center py-4 text-gray-500">
-            Nenhuma atividade recente.
-        </div>
-        {% endif %}
+      {% else %}
+        <div class="text-center py-4 text-gray-500">Nenhuma atividade recente.</div>
+      {% endif %}
     </div>
 
     <!-- Próximos Eventos -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-gray-800">Próximos Eventos</h2>
-            <a href="{% url 'events:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
-        </div>
-        
-        {% if upcoming_events %}
-        <ul class="divide-y divide-gray-200">
-            {% for evento in upcoming_events %}
-            <li class="py-3">
-                <div class="flex items-center justify-between mb-1">
-                    <a href="{% url 'events:event_detail' evento.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ evento.title }}</a>
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    {% if evento.type == 'culto' %}bg-green-100 text-green-800
-                    {% elif evento.type == 'reuniao' %}bg-blue-100 text-blue-800
-                    {% elif evento.type == 'especial' %}bg-purple-100 text-purple-800
-                    {% else %}bg-gray-100 text-gray-800{% endif %}">
-                        {{ evento.get_type_display|default:"Não especificado" }}
-                    </span>
-                </div>
-                <p class="text-sm text-gray-500">
-                    {{ evento.date|date:"d/m/Y" }} {% if evento.time %}• {{ evento.time|time:"H:i" }}{% endif %}
-                </p>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <div class="text-center py-4 text-gray-500">
-            Nenhum evento próximo agendado.
-        </div>
-        {% endif %}
-    </div>
-</div>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Próximos Eventos</h2>
+        <a href="{% url 'events:event_list' %}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">Ver todos →</a>
+      </div>
 
+      {% if upcoming_events %}
+        <ul class="divide-y divide-gray-200">
+          {% for evento in upcoming_events %}
+            <li class="py-3">
+              <div class="flex items-center justify-between mb-1">
+                <a href="{% url 'events:event_detail' evento.pk %}" class="text-sm font-medium text-gray-900 hover:text-purple-600">{{ evento.title }}</a>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    {% if evento.type == 'culto' %}
+                    
+                    
+                    
+                  
+                    
+                    bg-green-100 text-green-800
+
+
+
+
+
+
+                  {% elif evento.type == 'reuniao' %}
+                    
+                    
+                    
+                  
+                    
+                    bg-blue-100 text-blue-800
+
+
+
+
+
+
+                  {% elif evento.type == 'especial' %}
+                    
+                    
+                    
+                  
+                    
+                    bg-purple-100 text-purple-800
+
+
+
+
+
+
+                  {% else %}
+                    
+                    
+                    
+                  
+                    
+                    bg-gray-100 text-gray-800
+
+
+
+
+
+                  {% endif %}">
+                  {{ evento.get_type_display|default:'Não especificado' }}
+                </span>
+              </div>
+              <p class="text-sm text-gray-500">
+                {{ evento.date|date:'d/m/Y' }} {% if evento.time %}
+                  • {{ evento.time|time:'H:i' }}
+                {% endif %}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="text-center py-4 text-gray-500">Nenhum evento próximo agendado.</div>
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}
 
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block extra_scripts %}
 <script>
+    console.log("Gráficos carregados com sucesso!");
     // Gráfico de Membros por Igreja
     const membersPorIgrejaCtx = document.getElementById('membersPorIgrejaChart').getContext('2d');
     const membersPorIgrejaChart = new Chart(membersPorIgrejaCtx, {
@@ -272,7 +488,7 @@
             datasets: [
                 {
                     label: 'Entradas',
-                    data: {{ data_incomes|safe }},
+                    data: {{ data_income|safe }},
                     borderColor: 'rgba(59, 130, 246, 1)', // Azul
                     backgroundColor: 'rgba(59, 130, 246, 0.2)',
                     tension: 0.3, // Suaviza a linha
