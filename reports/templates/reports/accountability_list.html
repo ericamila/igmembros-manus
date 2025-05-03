@@ -1,0 +1,60 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+
+{% block title %}Prestações de Contas{% endblock %}
+{% block page_title %}Prestações de Contas{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Lista de Prestações de Contas</h2>
+        <a href="{% url 'relatorios:accountability_create' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Nova Prestação
+        </a>
+    </div>
+
+    {% if reports %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mês/Ano</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Total</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documentos</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
+                    <th scope="col" class="relative px-6 py-3">
+                        <span class="sr-only">Ações</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for report in reports %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ report.month|stringformat:"02d" }}/{{ report.year }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">R$ {{ report.amount|intcomma }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.documents.count }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.created_at|date:"d/m/Y H:i" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <a href="{% url 'relatorios:accountability_detail' report.pk %}" class="text-indigo-600 hover:text-indigo-900">Ver</a>
+                        <a href="{% url 'relatorios:accountability_update' report.pk %}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
+                        <a href="{% url 'relatorios:accountability_delete' report.pk %}" class="text-red-600 hover:text-red-900">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4 text-gray-500">
+        Nenhuma prestação de contas encontrada.
+    </div>
+    {% endif %}
+
+    {% include "core/includes/pagination.html" %}
+
+</div>
+{% endblock %}
+
