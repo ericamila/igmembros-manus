@@ -8,7 +8,7 @@
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-gray-800">Lista de Prestações de Contas</h2>
-        <a href="{% url 'relatorios:accountability_create' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <a href="{% url 'reports:accountability_create' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
@@ -38,9 +38,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.documents.count }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.created_at|date:"d/m/Y H:i" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <a href="{% url 'relatorios:accountability_detail' report.pk %}" class="text-indigo-600 hover:text-indigo-900">Ver</a>
-                        <a href="{% url 'relatorios:accountability_update' report.pk %}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
-                        <a href="{% url 'relatorios:accountability_delete' report.pk %}" class="text-red-600 hover:text-red-900">Excluir</a>
+                        <a href="{% url 'reports:accountability_detail' report.pk %}" class="text-indigo-600 hover:text-indigo-900">Ver</a>
+                        <a href="{% url 'reports:accountability_update' report.pk %}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
+                        <a href="{% url 'reports:accountability_delete' report.pk %}" class="text-red-600 hover:text-red-900">Excluir</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -53,7 +53,7 @@
     </div>
     {% endif %}
 
-    {% include "core/includes/pagination.html" %}
+   {# {% include "core/includes/pagination.html" %} #} {# Uncomment if you have pagination #} 
 
 </div>
 {% endblock %}

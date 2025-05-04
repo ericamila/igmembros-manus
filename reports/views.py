@@ -328,111 +328,12 @@ def relatorio_contribuicoes_anuais(request):
     }
     return render(request, "reports/contribuicoes_anuais.html", context)
 
-    today = timezone.now().date()
-    # Updated variable names
-    classes = SchoolClass.objects.all().order_by("name")
-    
-    # Filters
-    class_id = request.GET.get("class_id") # Changed param name
-    class_date_str = request.GET.get("class_date", today.strftime("%Y-%m-%d")) # Changed param name
-
-    try:
-        class_date = date.fromisoformat(class_date_str)
-    except (ValueError, TypeError):
-        class_date = today
-
-    # Updated variable names
-    attendances = Attendance.objects.filter(date=class_date).select_related("student__member")
-    selected_class = None
-    if class_id:
-        try:
-            selected_class = SchoolClass.objects.get(pk=class_id)
-            attendances = attendances.filter(school_class_id=class_id)
-        except SchoolClass.DoesNotExist:
-            class_id = None # Reset if invalid ID
-            
-    attendances = attendances.order_by("student__member__name")
-
-    total_present = attendances.filter(present=True).count()
-    total_absent = attendances.filter(present=False).count()
-    total_records = attendances.count()
-
-    context = {
-        "active_menu": "reports",
-        "classes": classes, # Updated context key
-        "selected_class_id": class_id, # Updated context key
-        "selected_class_name": selected_class.name if selected_class else "All", # Updated context key
-        "class_date": class_date, # Updated context key
-        "class_date_str": class_date.strftime("%Y-%m-%d"),
-        "attendances": attendances, # Updated context key
-        "total_present": total_present,
-        "total_absent": total_absent,
-        "total_records": total_records,
-    }
-    return render(request, "relatorios/frequencia.html", context)
-
-    today = timezone.now().date()
-    current_year = today.year
-    all_members = Member.objects.filter(status="active").order_by("name") # Get active members for filter
-
-    # Filter by year and member (GET parameters)
-    try:
-        year_param = int(request.GET.get("year", current_year))
-    except (ValueError, TypeError):
-        year_param = current_year
-        
-    member_param = request.GET.get("member") # Get member ID from filter
-
-    # Filter incomes for the year associated with a member
-    # Updated model and field names
-    contributions_query = Income.objects.filter(
-        date__year=year_param,
-        member__isnull=False
-    )
-    
-    selected_member_instance = None
-    if member_param:
-        try:
-            selected_member_instance = Member.objects.get(pk=member_param)
-            contributions_query = contributions_query.filter(member_id=member_param)
-        except Member.DoesNotExist:
-            member_param = None # Reset if invalid member ID
-
-    # Group by member ID and name, sum the amount
-    contributions = contributions_query.values(
-        "member__id", "member__name" 
-    ).annotate(
-        total_contribution=Sum("amount") # Updated field name
-    ).order_by("-total_contribution", "member__name") # Order by highest contribution
-
-    # Calculate overall total only if no specific member is selected
-    total_overall_contribution = None
-    if not member_param:
-        total_overall_contribution = contributions.aggregate(total_overall=Sum("total_contribution"))["total_overall"] or 0
-
-    # Generate list of years for filter dropdown
-    available_years = Income.objects.annotate(year=TruncYear("date")).values_list("year", flat=True).distinct().order_by("-year")
-    if not available_years:
-         available_years = range(current_year, current_year - 5, -1)
-
-    context = {
-        "active_menu": "reports",
-        "selected_year": year_param,
-        "available_years": available_years,
-        "contributions": contributions,
-        "total_overall_contribution": total_overall_contribution, # Updated context key
-        "all_members": all_members, # Pass members for the filter dropdown
-        "selected_member": member_param, # Pass selected member ID
-        "selected_member_name": selected_member_instance.name if selected_member_instance else None, # Pass selected member name
-    }
-    return render(request, "relatorios/contribuicoes_anuais.html", context)
-
 # --- Accountability Reports ---
 
 @method_decorator(login_required, name="dispatch")
 class AccountabilityReportListView(ListView):
     model = AccountabilityReport
-    template_name = "relatorios/accountability_list.html"
+    template_name = "reports/accountability_list.html"
     context_object_name = "reports"
     paginate_by = 15
 
@@ -444,7 +345,7 @@ class AccountabilityReportListView(ListView):
 @method_decorator(login_required, name="dispatch")
 class AccountabilityReportDetailView(DetailView):
     model = AccountabilityReport
-    template_name = "relatorios/accountability_detail.html"
+    template_name = "reports/accountability_detail.html"
     context_object_name = "report"
 
     def get_context_data(self, **kwargs):
@@ -458,8 +359,8 @@ class AccountabilityReportDetailView(DetailView):
 class AccountabilityReportCreateView(CreateView):
     model = AccountabilityReport
     form_class = AccountabilityReportForm
-    template_name = "relatorios/accountability_form.html"
-    success_url = reverse_lazy("relatorios:accountability_list")
+    template_name = "reports/accountability_form.html"
+    success_url = reverse_lazy("reports:accountability_list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -494,8 +395,8 @@ class AccountabilityReportCreateView(CreateView):
 class AccountabilityReportUpdateView(UpdateView):
     model = AccountabilityReport
     form_class = AccountabilityReportForm
-    template_name = "relatorios/accountability_form.html"
-    success_url = reverse_lazy("relatorios:accountability_list")
+    template_name = "reports/accountability_form.html"
+    success_url = reverse_lazy("reports:accountability_list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -528,8 +429,8 @@ class AccountabilityReportUpdateView(UpdateView):
 @method_decorator(login_required, name="dispatch")
 class AccountabilityReportDeleteView(DeleteView):
     model = AccountabilityReport
-    template_name = "relatorios/accountability_confirm_delete.html"
-    success_url = reverse_lazy("relatorios:accountability_list")
+    template_name = "reports/accountability_confirm_delete.html"
+    success_url = reverse_lazy("reports:accountability_list")
     context_object_name = "report"
 
     def get_context_data(self, **kwargs):

@@ -16,7 +16,7 @@ urlpatterns = [
     path("school/frequencia/", views.relatorio_frequencia, name="frequencia"),
 
     # Members Reports
-    path("membros/estatisticas/", views.relatorio_membros_estatisticas, name="members_estatisticas"),
+    path("membros/estatisticas/", views.relatorio_membros_estatisticas, name="membros_estatisticas"),
     path("members/aniversariantes/", views.relatorio_aniversariantes, name="aniversariantes"),
     path("members/contribuicoes-anuais/", views.relatorio_contribuicoes_anuais, name="contribuicoes_anuais"),
 
