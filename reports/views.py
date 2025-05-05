@@ -20,6 +20,12 @@ from django.db.models.functions import ExtractDay, TruncYear
 from .models import AccountabilityReport, AccountabilityDocument
 from .forms import AccountabilityReportForm, AccountabilityDocumentFormSet
 
+# Imports for Export
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+import io
+
 @login_required
 def index(request):
     context = {
@@ -27,24 +33,61 @@ def index(request):
     }
     return render(request, "reports/index.html", context)
 
-# --- Relatórios Financeiros ---
-@login_required
-def relatorio_movimentacoes_mensais(request):
+# --- Helper function to get common context for reports ---
+def _get_report_filters(request):
     today = timezone.now().date()
     current_month = today.month
     current_year = today.year
 
-    # Permitir filtrar por mês e ano (GET parameters)
     try:
         month_param = int(request.GET.get("month", current_month))
         year_param = int(request.GET.get("year", current_year))
         filter_date = date(year_param, month_param, 1)
     except (ValueError, TypeError):
+        month_param = current_month
+        year_param = current_year
         filter_date = date(current_year, current_month, 1)
 
-    first_day_month = filter_date
-    last_day_month = first_day_month + relativedelta(months=1) - relativedelta(days=1)
+    try:
+        end_date_str = request.GET.get("end_date", today.strftime("%Y-%m-%d"))
+        end_date = date.fromisoformat(end_date_str)
+    except (ValueError, TypeError):
+        end_date = today
+        end_date_str = end_date.strftime("%Y-%m-%d")
 
+    class_id = request.GET.get("class_id")
+    try:
+        class_date_str = request.GET.get("class_date", today.strftime("%Y-%m-%d"))
+        class_date = date.fromisoformat(class_date_str)
+    except (ValueError, TypeError):
+        class_date = today
+        class_date_str = class_date.strftime("%Y-%m-%d")
+
+    member_param = request.GET.get("member")
+
+    return {
+        "today": today,
+        "current_month": current_month,
+        "current_year": current_year,
+        "month_param": month_param,
+        "year_param": year_param,
+        "filter_date": filter_date,
+        "end_date": end_date,
+        "end_date_str": end_date_str,
+        "class_id": class_id,
+        "class_date": class_date,
+        "class_date_str": class_date_str,
+        "member_param": member_param,
+    }
+
+
+# --- Relatórios Financeiros ---
+@login_required
+def relatorio_movimentacoes_mensais(request):
+    filters = _get_report_filters(request)
+    first_day_month = filters["filter_date"]
+    last_day_month = first_day_month + relativedelta(months=1) - relativedelta(days=1)
+    
     incomes = Income.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
     expenses = Expense.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
 
@@ -53,7 +96,7 @@ def relatorio_movimentacoes_mensais(request):
     month_balance = total_incomes - total_expenses
 
     # Gerar lista de meses/anos para o filtro dropdown
-    available_years = range(current_year, current_year - 5, -1) # Últimos 5 anos
+    available_years = range(filters["current_year"], filters["current_year"] - 5, -1) # Últimos 5 anos
     available_months = [
         (1, "Janeiro"), (2, "Fevereiro"), (3, "Março"), (4, "Abril"),
         (5, "Maio"), (6, "Junho"), (7, "Julho"), (8, "Agosto"),
@@ -72,20 +115,121 @@ def relatorio_movimentacoes_mensais(request):
         "month_name": first_day_month.strftime("%B"), # Nome do mês por extenso
         "available_years": available_years,
         "available_months": available_months,
+        "filters_query_string": request.GET.urlencode(), # Pass filters for export links
     }
     return render(request, "reports/movimentacoes_mensais.html", context)
 
+
+@login_required
+def export_movimentacoes_mensais_xlsx(request):
+    filters = _get_report_filters(request)
+    first_day_month = filters["filter_date"]
+    last_day_month = first_day_month + relativedelta(months=1) - relativedelta(days=1)
+
+    incomes = Income.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
+    expenses = Expense.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
+    total_incomes = sum(i.amount for i in incomes)
+    total_expenses = sum(e.amount for e in expenses)
+    month_balance = total_incomes - total_expenses
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"Mov. {first_day_month.strftime("%b_%Y")}"
+
+    # Title
+    ws.merge_cells("A1:E1")
+    title_cell = ws["A1"]
+    title_cell.value = f"Relatório de Movimentações Mensais - {first_day_month.strftime("%B %Y")}"
+    title_cell.font = Font(bold=True, size=14)
+    title_cell.alignment = Alignment(horizontal="center")
+    ws.row_dimensions[1].height = 20
+
+    # Incomes Section
+    ws.append([]) # Spacer row
+    ws.append(["Receitas"])
+    ws["A3"].font = Font(bold=True, size=12)
+    ws.append(["Data", "Descrição", "Categoria", "Membro", "Valor"])
+    header_font = Font(bold=True)
+    for col in ["A", "B", "C", "D", "E"]:
+        ws[f"{col}4"].font = header_font
+
+    row = 5
+    for income in incomes:
+        ws.append([
+            income.date,
+            income.description,
+            income.category.name if income.category else "",
+            income.member.name if income.member else "",
+            income.amount
+        ])
+        ws[f"E{row}"].number_format = "R$ #,##0.00"
+        row += 1
+
+    ws.append(["", "", "", "Total Receitas:", total_incomes])
+    ws[f"D{row}"].font = Font(bold=True)
+    ws[f"E{row}"].font = Font(bold=True)
+    ws[f"E{row}"].number_format = "R$ #,##0.00"
+    row += 1
+
+    # Expenses Section
+    ws.append([]) # Spacer row
+    row += 1
+    ws.append(["Despesas"])
+    ws[f"A{row}"].font = Font(bold=True, size=12)
+    row += 1
+    ws.append(["Data", "Descrição", "Categoria", "", "Valor"])
+    for col in ["A", "B", "C", "E"]:
+        ws[f"{col}{row}"].font = header_font
+    row += 1
+
+    for expense in expenses:
+        ws.append([
+            expense.date,
+            expense.description,
+            expense.category.name if expense.category else "",
+            "",
+            expense.amount
+        ])
+        ws[f"E{row}"].number_format = "R$ #,##0.00"
+        row += 1
+
+    ws.append(["", "", "", "Total Despesas:", total_expenses])
+    ws[f"D{row}"].font = Font(bold=True)
+    ws[f"E{row}"].font = Font(bold=True)
+    ws[f"E{row}"].number_format = "R$ #,##0.00"
+    row += 1
+
+    # Balance Section
+    ws.append([]) # Spacer row
+    row += 1
+    ws.append(["", "", "", "Saldo do Mês:", month_balance])
+    ws[f"D{row}"].font = Font(bold=True, size=12)
+    ws[f"E{row}"].font = Font(bold=True, size=12)
+    ws[f"E{row}"].number_format = "R$ #,##0.00"
+
+    # Adjust column widths
+    ws.column_dimensions["A"].width = 12
+    ws.column_dimensions["B"].width = 35
+    ws.column_dimensions["C"].width = 20
+    ws.column_dimensions["D"].width = 20
+    ws.column_dimensions["E"].width = 15
+
+    # Save to buffer
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer,
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f"attachment; filename=movimentacoes_{first_day_month.strftime("%Y_%m")}.xlsx"
+    return response
+
 @login_required
 def relatorio_dre(request):
-    today = timezone.now().date()
-    current_year = today.year
-
-    # Permitir filtrar por ano (GET parameter)
-    try:
-        year_param = int(request.GET.get("year", current_year))
-    except (ValueError, TypeError):
-        year_param = current_year
-
+    filters = _get_report_filters(request)
+    year_param = filters["year_param"]
     first_day_year = date(year_param, 1, 1)
     last_day_year = date(year_param, 12, 31)
 
@@ -104,7 +248,7 @@ def relatorio_dre(request):
     net_result = total_revenue - total_expenditure
 
     # Gerar lista de anos para o filtro dropdown
-    available_years = range(current_year, current_year - 5, -1) # Últimos 5 anos
+    available_years = range(filters["current_year"], filters["current_year"] - 5, -1) # Últimos 5 anos
 
     context = {
         "active_menu": "reports",
@@ -115,6 +259,8 @@ def relatorio_dre(request):
         "total_expenditure": total_expenditure, 
         "net_result": net_result, 
         "available_years": available_years,
+        "filters_query_string": request.GET.urlencode(), # Pass filters for export links
+
     }
     return render(request, "reports/dre.html", context)
 
@@ -123,14 +269,8 @@ def relatorio_balanco(request):
     # Para um balanço simplificado, calculamos o saldo acumulado até a date atual
     # Idealmente, um balanço real consideraria ativos e passivos específicos.
     # Aqui, focaremos no saldo de caixa acumulado.
-    today = timezone.now().date()
-
-    # Permitir filtrar por date (GET parameter)
-    try:
-        end_date_str = request.GET.get("end_date", today.strftime("%Y-%m-%d")) # Changed param name
-        end_date = date.fromisoformat(end_date_str)
-    except (ValueError, TypeError):
-        end_date = today
+    filters = _get_report_filters(request)
+    end_date = filters["end_date"]
 
     total_incomes_accumulated = Income.objects.filter(date__lte=end_date).aggregate(total=Sum("amount"))["total"] or 0
     total_expenses_accumulated = Expense.objects.filter(date__lte=end_date).aggregate(total=Sum("amount"))["total"] or 0
@@ -147,11 +287,12 @@ def relatorio_balanco(request):
     context = {
         "active_menu": "reports",
         "end_date": end_date, 
-        "end_date_str": end_date.strftime("%Y-%m-%d"),
+        "end_date_str": filters["end_date_str"],
         "assets": assets,
         "liabilities_equity": liabilities_equity, 
         "total_assets": sum(assets.values()),
         "total_liabilities_equity": sum(liabilities_equity.values()), 
+        "filters_query_string": request.GET.urlencode(), # Pass filters for export links
     }
     return render(request, "reports/balanco.html", context)
 
@@ -171,18 +312,11 @@ def relatorio_alunos_por_turma(request):
 
 @login_required
 def relatorio_frequencia(request):
-    today = timezone.now().date()
+    filters = _get_report_filters(request)
+    class_id = filters["class_id"]
+    class_date = filters["class_date"]
+
     classes = SchoolClass.objects.all().order_by("name")
-    
-    # Filters
-    class_id = request.GET.get("class_id") 
-    class_date_str = request.GET.get("class_date", today.strftime("%Y-%m-%d")) 
-
-    try:
-        class_date = date.fromisoformat(class_date_str)
-    except (ValueError, TypeError):
-        class_date = today
-
     attendances = Attendance.objects.filter(date=class_date).select_related("student__member")
     selected_class = None
     if class_id:
@@ -190,25 +324,25 @@ def relatorio_frequencia(request):
             selected_class = SchoolClass.objects.get(pk=class_id)
             attendances = attendances.filter(school_class_id=class_id)
         except SchoolClass.DoesNotExist:
-            class_id = None # Reset if invalid ID
-            
-    attendances = attendances.order_by("student__member__name")
+            class_id = None
 
+    attendances = attendances.order_by("student__member__name")
     total_present = attendances.filter(present=True).count()
     total_absent = attendances.filter(present=False).count()
     total_records = attendances.count()
 
     context = {
         "active_menu": "reports",
-        "classes": classes, 
-        "selected_class_id": class_id, 
-        "selected_class_name": selected_class.name if selected_class else "All", 
-        "class_date": class_date, 
-        "class_date_str": class_date.strftime("%Y-%m-%d"),
-        "attendances": attendances, 
+        "classes": classes,
+        "selected_class_id": class_id,
+        "selected_class_name": selected_class.name if selected_class else "Todas",
+        "class_date": class_date,
+        "class_date_str": filters["class_date_str"],
+        "attendances": attendances,
         "total_present": total_present,
         "total_absent": total_absent,
         "total_records": total_records,
+        "filters_query_string": request.GET.urlencode(), # Pass filters for export links
     }
     return render(request, "reports/frequencia.html", context)
 
