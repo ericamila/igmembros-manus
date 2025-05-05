@@ -14,7 +14,14 @@
 {% endblock %}
 
 {% block content %}
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+  <div class="bg-blue-100 text-white p-6 rounded-lg shadow-md mb-6">
+    <h1 class="text-2xl font-bold">Bem-vindo ao Templo Digital</h1>
+    <p class="mt-2 max-w-2xl">Sistema integrado de gestão para sua igreja. Visualize estatísticas, gerencie membros, eventos, finanças e mais em um só lugar.</p>
+  </div>
+
+  <div class="h-6"></div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
     <!-- Card de Membros -->
     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
       <div class="flex justify-between items-start">
@@ -128,9 +135,13 @@
         <a href="{% url 'events:event_list' %}" class="text-sm text-green-600 hover:text-green-800 font-medium">Ver todos os eventos →</a>
       </div>
     </div>
+  </div>
 
-    <!-- Gráficos e Estatísticas -->
-    <!-- Gráfico de Membros por Igreja -->
+  <div class="h-6"></div>
+
+  <!-- Gráficos e Estatísticas -->
+  <!-- Gráfico de Membros por Igreja -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
     <div class="bg-white rounded-lg shadow-md p-6">
       <h2 class="text-xl font-bold text-gray-800 mb-4">Membros por Igreja</h2>
       <div class="h-64">
@@ -244,6 +255,8 @@
                     
                     
                     
+                    
+                    
                   
                     
                     bg-blue-100 text-blue-600
@@ -253,7 +266,11 @@
 
 
 
+
+
                   {% elif activity.type == 'donation' %}
+                    
+                    
                     
                     
                     
@@ -266,7 +283,11 @@
 
 
 
+
+
                   {% elif activity.type == 'event_created' or activity.type == 'event_updated' %}
+                    
+                    
                     
                     
                     
@@ -279,7 +300,11 @@
 
 
 
+
+
                   {% elif activity.type == 'birthday' %}
+                    
+                    
                     
                     
                     
@@ -292,13 +317,19 @@
 
 
 
+
+
                   {% else %}
+                    
+                    
                     
                     
                     
                   
                     
                     bg-gray-100 text-gray-600
+
+
 
 
 
@@ -377,6 +408,8 @@
                     
                     
                     
+                    
+                    
                   
                     
                     bg-green-100 text-green-800
@@ -386,7 +419,11 @@
 
 
 
+
+
                   {% elif evento.type == 'reuniao' %}
+                    
+                    
                     
                     
                     
@@ -399,7 +436,11 @@
 
 
 
+
+
                   {% elif evento.type == 'especial' %}
+                    
+                    
                     
                     
                     
@@ -412,13 +453,19 @@
 
 
 
+
+
                   {% else %}
+                    
+                    
                     
                     
                     
                   
                     
                     bg-gray-100 text-gray-800
+
+
 
 
 
@@ -444,7 +491,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
+  <script>
     console.log("Gráficos carregados com sucesso!");
     // Gráfico de Membros por Igreja
     const membersPorIgrejaCtx = document.getElementById('membersPorIgrejaChart').getContext('2d');
