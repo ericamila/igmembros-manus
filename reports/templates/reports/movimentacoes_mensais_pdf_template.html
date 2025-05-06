@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Movimentações - {{ month_name }} {{ selected_year }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total-row td {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .balance-row td {
+            font-weight: bold;
+            font-size: 1.1em;
+            background-color: #e9e9e9;
+        }
+        .currency {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Movimentações Mensais</h1>
+    <h2>{{ month_name }} de {{ selected_year }}</h2>
+
+    <h2>Receitas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Membro</th>
+                <th class="currency">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for income in incomes %}
+            <tr>
+                <td>{{ income.date|date:"d/m/Y" }}</td>
+                <td>{{ income.description }}</td>
+                <td>{{ income.category.name|default:"-" }}</td>
+                <td>{{ income.member.name|default:"-" }}</td>
+                <td class="currency">R$ {{ income.amount|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Nenhuma receita registrada neste período.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="4">Total Receitas:</td>
+                <td class="currency">R$ {{ total_incomes|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Despesas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th class="currency">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.date|date:"d/m/Y" }}</td>
+                <td>{{ expense.description }}</td>
+                <td>{{ expense.category.name|default:"-" }}</td>
+                <td class="currency">R$ {{ expense.amount|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Nenhuma despesa registrada neste período.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="3">Total Despesas:</td>
+                <td class="currency">R$ {{ total_expenses|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <tbody>
+            <tr class="balance-row">
+                <td colspan="3">Saldo do Mês:</td>
+                <td class="currency">R$ {{ month_balance|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
+

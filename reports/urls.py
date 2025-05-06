@@ -8,6 +8,8 @@ urlpatterns = [
 
     # Financial Reports
     path("movimentacoes-mensais/", views.relatorio_movimentacoes_mensais, name="movimentacoes_mensais"),
+    path("movimentacoes-mensais/export/xlsx/", views.export_movimentacoes_mensais_xlsx, name="export_movimentacoes_mensais_xlsx"), # Added export URL
+    path("movimentacoes-mensais/export/pdf/", views.export_movimentacoes_mensais_pdf, name="export_movimentacoes_mensais_pdf"), # Added PDF export URL
     path("dre/", views.relatorio_dre, name="dre"),
     path("balance/", views.relatorio_balanco, name="balanco"),
 

@@ -26,6 +26,9 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 import io
 
+from django.template.loader import render_to_string
+#from weasyprint import HTML
+
 @login_required
 def index(request):
     context = {
@@ -576,3 +579,43 @@ class AccountabilityReportDeleteView(DeleteView):
     def form_valid(self, form):
         messages.success(self.request, f"Prestação de contas {self.object.month:02d}/{self.object.year} excluída com sucesso.")
         return super().form_valid(form)
+
+
+@login_required
+def export_movimentacoes_mensais_pdf(request):
+    filters = _get_report_filters(request)
+    first_day_month = filters["filter_date"]
+    last_day_month = first_day_month + relativedelta(months=1) - relativedelta(days=1)
+    
+    incomes = Income.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
+    expenses = Expense.objects.filter(date__gte=first_day_month, date__lte=last_day_month).order_by("date")
+
+    total_incomes = sum(i.amount for i in incomes)
+    total_expenses = sum(e.amount for e in expenses)
+    month_balance = total_incomes - total_expenses
+
+    context = {
+        "incomes": incomes, 
+        "expenses": expenses, 
+        "total_incomes": total_incomes, 
+        "total_expenses": total_expenses, 
+        "month_balance": month_balance, 
+        "selected_month": first_day_month.month, 
+        "selected_year": first_day_month.year, 
+        "month_name": first_day_month.strftime("%B"),
+        "is_pdf_export": True, # Flag to adjust template rendering if needed
+    }
+
+    # Render HTML template to string
+    html_string = render_to_string("reports/movimentacoes_mensais_pdf_template.html", context)
+
+    # Generate PDF
+    # Linhas comentadas abaixo geram erro: OSError: cannot load library 'libgobject-2.0-0': error 0x7e. Additionally, ctypes.util.find_library() did not manage to locate a library called 'libgobject-2.0-0'
+    # pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+
+    # Create HTTP response
+    #response = HttpResponse(pdf_file, content_type="application/pdf")
+    response = HttpResponse(None, content_type="application/pdf")
+    response["Content-Disposition"] = f"attachment; filename=movimentacoes_{first_day_month.strftime("%Y_%m")}.pdf"
+    return response
+
