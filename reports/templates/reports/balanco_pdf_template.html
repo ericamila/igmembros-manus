@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Balanço Patrimonial - {{ end_date|date:"d/m/Y" }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        h1, h2 { text-align: center; color: #333; }
+        h3 { margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total-row td {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .currency {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Balanço Patrimonial Simplificado</h1>
+    <h2>Em: {{ end_date|date:"d/m/Y" }}</h2>
+
+    <h3>Ativo</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Conta</th>
+                <th class="currency">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account, value in assets.items %}
+            <tr>
+                <td>{{ account }}</td>
+                <td class="currency">R$ {{ value|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nenhuma conta de ativo registrada.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td>Total Ativo:</td>
+                <td class="currency">R$ {{ total_assets|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Passivo e Patrimônio Líquido</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Conta</th>
+                <th class="currency">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account, value in liabilities_equity.items %}
+            <tr>
+                <td>{{ account }}</td>
+                <td class="currency">R$ {{ value|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nenhuma conta de passivo ou PL registrada.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td>Total Passivo e Patrimônio Líquido:</td>
+                <td class="currency">R$ {{ total_liabilities_equity|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
+

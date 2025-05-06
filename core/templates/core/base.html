@@ -6,96 +6,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-      {% block title %}Templo Digital{% endblock %}
+      {% block title %}
+        Templo Digital
+      {% endblock %}
     </title>
-    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
     {% tailwind_css %}
-    {# Incluir Alpine.js para interatividade, se necessário mais tarde #}
-    {# <script src="//unpkg.com/alpinejs" defer></script> #}
+    {# Incluir Alpine.js para interatividade #}
+    <script src="//unpkg.com/alpinejs" defer></script>
     {% block extra_head %}
 
     {% endblock %}
+    <style>
+      [x-cloak] { display: none !important; }
+    </style>
   </head>
-  <body class="bg-gray-100 flex min-h-screen">
-    
-  {% if user.is_authenticated %}
- <!-- Sidebar -->
- <aside class="w-64 bg-gray-800 text-white flex flex-col fixed inset-y-0 left-0">
-    {% include 'parts/sidebar.html' %}    
-
-  <div class="p-4 border-t border-gray-700">
-    <a href="{% url 'users:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
-      {% include 'icons/profile.html' %}
-      <span class="ml-3">Meu Perfil</span>
-    </a>
-
-    <form method="post" action="{% url 'users:logout' %}">
-      {% csrf_token %}
-      <span class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md cursor:pointer">
-        <button type="submit"  class="flex items-center w-full">
-          {% include 'icons/logout.html' %}
-          <span class="ml-3">Sair</span>
-        </button>
-      </span>
-    </form>
-  </div>
-</aside>
-
-
-    {% endif %}
-
-    {% if user.is_authenticated %}
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col ml-64">
-      <!-- ml-64 para compensar a largura da sidebar -->
-    {% else %}
-    <div class="flex-1 flex flex-col">
-    {% endif %}
-
+  <body class="bg-gray-100 ml-64" x-data="{ isSidebarOpen: false }">
+    <div class="flex min-h-screen"> 
       
-        {% if user.is_authenticated %}
-        <!-- Header -->
-      <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-        <div>
-          <h1 class="text-2xl font-semibold text-gray-800">
-            {% block page_title %}
-              Dashboard
-            {% endblock %}
-          </h1>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="relative">
-            <input type="text" placeholder="Pesquisar..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500" />
-            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">{% include 'icons/pesquisar.html' %}</span>
-          </div>
-          <button class="text-gray-500 hover:text-gray-700">{% include 'icons/atualizar.html' %}</button>
-          <button class="text-gray-500 hover:text-gray-700">{% include 'icons/notificacoes.html' %}</button>
-          <div class="flex items-center space-x-2">
-            <span class="text-gray-700">{{ user.get_full_name|default:user.username }}</span>
-            {% if user.profile_image %}
-              <img src="{{ user.profile_image.url }}" alt="User Avatar" class="w-8 h-8 rounded-full" />
-            {% else %}
-              <div class="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center text-white">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
-            {% endif %}
-          </div>
-        </div>
-      </header>
-        {% endif %}
-      <!-- Page Content -->
-      <main class="flex-grow p-6">
-        {% block content %}
-          <p class="text-gray-700">Conteúdo principal da página.</p>
-        {% endblock %}
-      </main>
-
       {% if user.is_authenticated %}
-      <!-- Footer -->
-      <footer class="bg-white text-center p-4 text-sm text-gray-500 mt-auto">
-        <p>
-          Templo Digital ©{% now 'Y' %}- Sistema de Gestão para Igrejas
-        </p>
-      </footer>
-        {% endif %}
-    </div>
+      <!-- Overlay for mobile sidebar -->
+      <div x-show="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-black/50 z-20 md:hidden" x-cloak></div> 
+
+      <!-- Sidebar -->
+      <aside 
+        class="w-64 bg-gray-800 text-white flex flex-col fixed inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
+        :class="{ 'translate-x-0': isSidebarOpen }"
+        x-cloak
+      >
+    
+      {% include "parts/sidebar.html" %}
+        
+        <div class="p-4 border-t border-gray-700">
+          <a href="{% url 'users:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
+            {% include 'icons/profile.html' %} <span class="ml-3">Meu Perfil</span>
+          </a>
+          <form method="post" action="{% url 'users:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="flex items-center w-full p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md cursor-pointer">
+                {% include 'icons/logout.html' %} <span class="ml-3">Sair</span>
+            </button>
+          </form>
+        </div>
+      </aside>
+      {% endif %}
+
+      <!-- Main Content Area -->
+      <div class="flex-1 flex flex-col {% if user.is_authenticated %}md:ml-64{% endif %}"> 
+          {% if user.is_authenticated %}
+          <!-- Header -->
+          <header class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
+            <div class="flex items-center">
+              <!-- Hamburger Menu Button -->
+              <button @click="isSidebarOpen = !isSidebarOpen" class="md:hidden mr-4 text-gray-600 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+              </button>
+              <h1 class="text-xl md:text-2xl font-semibold text-gray-800">
+                {% block page_title %}Dashboard{% endblock %}
+              </h1>
+            </div>
+            <div class="flex items-center space-x-4">
+              <div class="relative hidden md:block">
+                <input type="text" placeholder="Pesquisar..." class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">{% include 'icons/pesquisar.html' %}</span>
+              </div>
+              <button class="text-gray-500 hover:text-gray-700 hidden md:block">{% include 'icons/atualizar.html' %}</button>
+              <button class="text-gray-500 hover:text-gray-700">{% include 'icons/notificacoes.html' %}</button>
+              <div class="flex items-center space-x-2">
+                <span class="text-gray-700 hidden sm:inline">{{ user.get_full_name|default:user.username }}</span>
+                {% if user.profile_image %}
+                  <img src="{{ user.profile_image.url }}" alt="User Avatar" class="w-8 h-8 rounded-full object-cover" />
+                {% else %}
+                  <div class="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center text-white font-semibold">
+                    {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </header>
+          {% endif %}
+          
+          <!-- Page Content -->
+          <main class="flex-grow p-6">
+            {% block content %}
+              <p class="text-gray-700">Conteúdo principal da página.</p>
+            {% endblock %}
+          </main>
+
+          {% if user.is_authenticated %}
+          <!-- Footer -->
+          <footer class="bg-white text-center p-4 text-sm text-gray-500 mt-auto">
+            <p>Templo Digital ©{% now 'Y' %} - Sistema de Gestão para Igrejas</p>
+          </footer>
+          {% endif %}
+      </div> 
+      
+    </div> 
   </body>
 </html>
+

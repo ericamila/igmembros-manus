@@ -1,126 +1,101 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% load static %}
 {% load humanize %}
 
 {% block title %}Relatório de Estatísticas de Membros{% endblock %}
-{% block page_title %}Relatório de Estatísticas de Membros voltar template anterior{% endblock %}
+{% block page_title %}Relatório de Estatísticas de Membros{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Relatório de Estatísticas de Membros</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
-        <li class="breadcrumb-item active">Estatísticas de Membros</li>
-    </ol>
+<div class="container mx-auto px-4">
+    {# Breadcrumbs can be kept or adapted if needed #}
 
-    <div class="row">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
-                <div class="card-body">Total de Membros</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <span class="small text-white stretched-link">{{ total_members }}</span>
-                    <div class="small text-white"><i class="fas fa-users"></i></div>
-                </div>
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-semibold">Estatísticas Gerais</h2>
+            {# Botões de Exportação #}
+            <div class="flex space-x-2">
+                <a href="{% url 'reports:export_membros_estatisticas_pdf' %}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                    Exportar PDF
+                </a>
+                <a href="{% url 'reports:export_membros_estatisticas_xlsx' %}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                    Exportar Excel
+                </a>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-success text-white mb-4">
-                <div class="card-body">Membros Ativos</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <span class="small text-white stretched-link">{{ active_members }}</span>
-                    <div class="small text-white"><i class="fas fa-user-check"></i></div>
-                </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                <p class="text-sm font-medium text-gray-500">Total de Membros</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ total_members }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                <p class="text-sm font-medium text-gray-500">Membros Ativos</p>
+                <p class="text-2xl font-semibold text-gray-900">{{ active_members }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {# Status #}
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 class="text-md font-semibold mb-2">Por Status</h3>
+                <ul class="space-y-1">
+                    {% for status, count in members_by_status %}
+                    <li class="flex justify-between text-sm">
+                        <span class="text-gray-600">{{ status }}</span>
+                        <span class="font-medium text-gray-900">{{ count }}</span>
+                    </li>
+                    {% empty %}
+                    <li class="text-sm text-gray-500">Nenhum dado.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {# Gênero #}
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 class="text-md font-semibold mb-2">Por Gênero</h3>
+                <ul class="space-y-1">
+                    {% for gender, count in members_by_gender %}
+                    <li class="flex justify-between text-sm">
+                        <span class="text-gray-600">{{ gender }}</span>
+                        <span class="font-medium text-gray-900">{{ count }}</span>
+                    </li>
+                     {% empty %}
+                    <li class="text-sm text-gray-500">Nenhum dado.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {# Estado Civil #}
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 class="text-md font-semibold mb-2">Por Estado Civil</h3>
+                <ul class="space-y-1">
+                    {% for marital_status, count in members_by_marital_status %}
+                    <li class="flex justify-between text-sm">
+                        <span class="text-gray-600">{{ marital_status }}</span>
+                        <span class="font-medium text-gray-900">{{ count }}</span>
+                    </li>
+                     {% empty %}
+                    <li class="text-sm text-gray-500">Nenhum dado.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {# Tipo #}
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 class="text-md font-semibold mb-2">Por Tipo</h3>
+                <ul class="space-y-1">
+                    {% for member_type, count in members_by_type %}
+                    <li class="flex justify-between text-sm">
+                        <span class="text-gray-600">{{ member_type }}</span>
+                        <span class="font-medium text-gray-900">{{ count }}</span>
+                    </li>
+                     {% empty %}
+                    <li class="text-sm text-gray-500">Nenhum dado.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-chart-pie me-1"></i>
-                    Membros por Status
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        {% for status, count in members_by_status %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ status|default:"Não especificado" }}
-                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">Nenhum membro encontrado.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-venus-mars me-1"></i>
-                    Membros por Gênero
-                </div>
-                <div class="card-body">
-                     <ul class="list-group list-group-flush">
-                        {% for gender, count in members_by_gender %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ gender|default:"Não especificado" }}
-                                <span class="badge bg-info rounded-pill">{{ count }}</span>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">Nenhum membro encontrado.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-ring me-1"></i>
-                    Membros por Estado Civil
-                </div>
-                <div class="card-body">
-                     <ul class="list-group list-group-flush">
-                        {% for status, count in members_by_marital_status %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ status|default:"Não especificado" }}
-                                <span class="badge bg-warning rounded-pill">{{ count }}</span>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">Nenhum membro encontrado.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-user-tag me-1"></i>
-                    Membros por Tipo
-                </div>
-                <div class="card-body">
-                     <ul class="list-group list-group-flush">
-                        {% for type, count in members_by_type %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ type|default:"Não especificado" }}
-                                <span class="badge bg-secondary rounded-pill">{{ count }}</span>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">Nenhum membro encontrado.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 {% endblock %}
 

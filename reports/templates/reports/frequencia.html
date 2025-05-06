@@ -6,93 +6,81 @@
 {% block page_title %}Relatório de Frequência - {{ selected_class_name }} em {{ class_date|date:"d/m/Y" }}{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-lg shadow-md p-4 mb-6 container-fluid px-4">
-    <h1 class="mt-4">Relatório de Frequência da Escola Dominical</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
-        <li class="breadcrumb-item active">Frequência</li>
-    </ol>
+<div class="container mx-auto px-4">
+    {# Breadcrumbs can be kept or adapted if needed #}
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-filter me-1"></i>
-            Filtros
-        </div>
-        <div class="card-body">
-            <form method="get">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="class_id" class="form-label">Turma:</label>
-                        <select name="class_id" id="class_id" class="form-select">
-                            <option value="">Todas as Turmas</option>
-                            {% for class_item in classes %}
-                                <option value="{{ class_item.id }}" {% if class_item.id|stringformat:"s" == selected_class_id %}selected{% endif %}>{{ class_item.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="class_date" class="form-label">Data da Aula:</label>
-                        <input type="date" name="class_date" id="class_date" class="form-control" value="{{ class_date_str }}">
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end mb-3">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                    </div>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold mb-4">Filtros</h2>
+        <form method="get">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label for="class_id" class="block text-sm font-medium text-gray-700">Turma:</label>
+                    <select name="class_id" id="class_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md">
+                        <option value="">Todas as Turmas</option>
+                        {% for class_item in classes %}
+                            <option value="{{ class_item.id }}" {% if class_item.id|stringformat:"s" == selected_class_id %}selected{% endif %}>{{ class_item.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
-        </div>
+                <div>
+                    <label for="class_date" class="block text-sm font-medium text-gray-700">Data da Aula:</label>
+                    <input type="date" name="class_date" id="class_date" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md" value="{{ class_date_str }}">
+                </div>
+                <div class="flex space-x-2">
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        Filtrar
+                    </button>
+                    {# Botões de Exportação #}
+                    <a href="{% url 'reports:export_frequencia_pdf' %}?{{ filters_query_string }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        Exportar PDF
+                    </a>
+                    <a href="{% url 'reports:export_frequencia_xlsx' %}?{{ filters_query_string }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        Exportar Excel
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-clipboard-list me-1"></i>
-            Frequência de {{ selected_class_name }} em {{ class_date|date:"d/m/Y" }}
-        </div>
-        <div class="card-body">
-            {% if attendances %}
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="attendanceTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Aluno</th>
-                                <th>Turma</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for attendance in attendances %}
-                            <tr>
-                                <td>{{ attendance.student.member.name }}</td>
-                                <td>{{ attendance.school_class.name }}</td>
-                                <td>
-                                    {% if attendance.present %}
-                                        <span class="badge bg-success">Presente</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">Ausente</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3">
-                    <strong>Resumo:</strong> Presentes: {{ total_present }} | Ausentes: {{ total_absent }} | Total Registros: {{ total_records }}
-                </div>
-            {% else %}
-                <p class="text-center">Nenhum registro de frequência encontrado para os filtros selecionados.</p>
-            {% endif %}
-        </div>
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-semibold mb-4">Frequência de {{ selected_class_name }} em {{ class_date|date:"d/m/Y" }}</h2>
+        
+        {% if attendances %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aluno</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turma</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for attendance in attendances %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ attendance.student.member.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ attendance.school_class.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                {% if attendance.present %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Presente</span>
+                                {% else %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Ausente</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ attendance.observation|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-sm text-gray-600">
+                <strong>Resumo:</strong> Presentes: {{ total_present }} | Ausentes: {{ total_absent }} | Total Registros: {{ total_records }}
+            </div>
+        {% else %}
+            <p class="text-center text-gray-500">Nenhum registro de frequência encontrado para os filtros selecionados.</p>
+        {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Optional: Add DataTables initialization if needed
-    // $(document).ready(function() {
-    //     $('#attendanceTable').DataTable();
-    // });
-</script>
 {% endblock %}
 

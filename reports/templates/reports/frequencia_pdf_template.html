@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Frequência - {{ class_date|date:"d/m/Y" }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        h1, h2 { text-align: center; color: #333; }
+        h2 { margin-bottom: 30px; font-size: 1.2em; font-weight: normal; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .center { text-align: center; }
+        .summary-table { width: auto; margin-left: auto; margin-right: auto; }
+        .summary-table td { border: none; padding: 5px 10px; }
+        .summary-table .label { font-weight: bold; text-align: right; }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Frequência</h1>
+    <h2>{{ selected_class_name }} - {{ class_date|date:"d/m/Y" }}</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Turma</th>
+                <th>Aluno</th>
+                <th class="center">Presente</th>
+                <th>Observação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for att in attendances %}
+            <tr>
+                <td>{{ att.school_class.name }}</td>
+                <td>{{ att.student.member.name }}</td>
+                <td class="center">{% if att.present %}Sim{% else %}Não{% endif %}</td>
+                <td>{{ att.observation|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="center">Nenhum registro de frequência encontrado para esta data/turma.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="summary-table">
+        <tr>
+            <td class="label">Total Presentes:</td>
+            <td>{{ total_present }}</td>
+        </tr>
+        <tr>
+            <td class="label">Total Ausentes:</td>
+            <td>{{ total_absent }}</td>
+        </tr>
+        <tr>
+            <td class="label">Total Registros:</td>
+            <td>{{ total_records }}</td>
+        </tr>
+    </table>
+
+</body>
+</html>
+

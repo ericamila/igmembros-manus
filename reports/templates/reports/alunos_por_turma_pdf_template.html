@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Alunos por Turma</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total-row td {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Alunos por Turma</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Turma</th>
+                <th class="center">Nº de Alunos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cls in classes %}
+            <tr>
+                <td>{{ cls.name }}</td>
+                <td class="center">{{ cls.num_students }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" class="center">Nenhuma turma encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td>Total Geral de Alunos:</td>
+                <td class="center">{{ total_students }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+</body>
+</html>
+

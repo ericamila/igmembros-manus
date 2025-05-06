@@ -3,92 +3,87 @@
 {% load humanize %}
 
 {% block title %}Relatório DRE (Demonstração do Resultado){% endblock %}
+{% block page_title %}Relatório DRE (Demonstração do Resultado) - {{ selected_year }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Relatório DRE (Demonstração do Resultado)</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
-        <li class="breadcrumb-item active">DRE</li>
-    </ol>
+<div class="container mx-auto px-4">
+    {# Breadcrumbs can be kept or adapted if needed #}
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-filter me-1"></i>
-            Filtros
-        </div>
-        <div class="card-body">
-            <form method="get">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="year" class="form-label">Ano:</label>
-                        <select name="year" id="year" class="form-select">
-                            {% for y in available_years %}
-                                <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end mb-3">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                    </div>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold mb-4">Filtros</h2>
+        <form method="get">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label for="year" class="block text-sm font-medium text-gray-700">Ano:</label>
+                    <select name="year" id="year" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md">
+                        {% for y in available_years %}
+                            <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
-        </div>
+                <div class="flex space-x-2">
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        Filtrar
+                    </button>
+                    {# Botões de Exportação #}
+                    <a href="{% url 'reports:export_dre_pdf' %}?{{ filters_query_string }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        Exportar PDF
+                    </a>
+                    <a href="{% url 'reports:export_dre_xlsx' %}?{{ filters_query_string }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        Exportar Excel
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-calculator me-1"></i>
-            DRE de {{ selected_year }}
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <tbody>
-                        <tr>
-                            <th colspan="2">Receitas Operacionais</th>
-                        </tr>
-                        {% for income_cat in incomes_by_category %}
-                        <tr>
-                            <td>{{ income_cat.category__name }}</td>
-                            <td class="text-end">{{ income_cat.total|intcomma }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2">Nenhuma receita registrada no período.</td>
-                        </tr>
-                        {% endfor %}
-                        <tr class="table-light">
-                            <th>(=) Total Receitas</th>
-                            <th class="text-end">{{ total_revenue|intcomma }}</th>
-                        </tr>
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-semibold mb-4">DRE de {{ selected_year }}</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <th colspan="2" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Receitas Operacionais</th>
+                    </tr>
+                    {% for income_cat in incomes_by_category %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ income_cat.category__name|default:"Sem Categoria" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">{{ income_cat.total|intcomma }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">Nenhuma receita registrada no período.</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="bg-gray-50">
+                        <th scope="row" class="px-6 py-3 text-left text-sm font-medium text-gray-900 uppercase tracking-wider">(=) Total Receitas</th>
+                        <th scope="row" class="px-6 py-3 text-right text-sm font-medium text-gray-900 uppercase tracking-wider">{{ total_revenue|intcomma }}</th>
+                    </tr>
 
-                        <tr>
-                            <th colspan="2">Despesas Operacionais</th>
-                        </tr>
-                        {% for expense_cat in expenses_by_category %}
-                        <tr>
-                            <td>{{ expense_cat.category__name }}</td>
-                            <td class="text-end">({{ expense_cat.total|intcomma }})</td> {# Display expenses as negative #}
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2">Nenhuma despesa registrada no período.</td>
-                        </tr>
-                        {% endfor %}
-                        <tr class="table-light">
-                            <th>(=) Total Despesas</th>
-                            <th class="text-end">({{ total_expenditure|intcomma }})</th>
-                        </tr>
+                    <tr>
+                        <th colspan="2" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Despesas Operacionais</th>
+                    </tr>
+                    {% for expense_cat in expenses_by_category %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ expense_cat.category__name|default:"Sem Categoria" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">({{ expense_cat.total|intcomma }})</td> {# Display expenses as negative #}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">Nenhuma despesa registrada no período.</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="bg-gray-50">
+                        <th scope="row" class="px-6 py-3 text-left text-sm font-medium text-gray-900 uppercase tracking-wider">(=) Total Despesas</th>
+                        <th scope="row" class="px-6 py-3 text-right text-sm font-medium text-red-600 uppercase tracking-wider">({{ total_expenditure|intcomma }})</th>
+                    </tr>
 
-                        <tr class="{% if net_result >= 0 %}table-success{% else %}table-danger{% endif %}">
-                            <th>(=) Resultado Líquido do Período</th>
-                            <th class="text-end">{{ net_result|intcomma }}</th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <tr class="{% if net_result >= 0 %}bg-green-100{% else %}bg-red-100{% endif %}">
+                        <th scope="row" class="px-6 py-4 text-left text-sm font-semibold text-gray-900 uppercase tracking-wider">(=) Resultado Líquido do Período</th>
+                        <th scope="row" class="px-6 py-4 text-right text-sm font-semibold {% if net_result >= 0 %}text-green-700{% else %}text-red-700{% endif %} uppercase tracking-wider">{{ net_result|intcomma }}</th>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

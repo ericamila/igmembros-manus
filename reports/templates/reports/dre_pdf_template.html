@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>DRE - {{ selected_year }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        h1, h2 { text-align: center; color: #333; }
+        h3 { margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total-row td {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .result-row td {
+            font-weight: bold;
+            font-size: 1.1em;
+            background-color: #e9e9e9;
+        }
+        .currency {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demonstração do Resultado do Exercício</h1>
+    <h2>Ano: {{ selected_year }}</h2>
+
+    <h3>Receitas Operacionais</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Categoria</th>
+                <th class="currency">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in incomes_by_category %}
+            <tr>
+                <td>{{ item.category__name|default:"Sem Categoria" }}</td>
+                <td class="currency">R$ {{ item.total|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nenhuma receita registrada neste período.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td>Total Receitas:</td>
+                <td class="currency">R$ {{ total_revenue|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Despesas Operacionais</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Categoria</th>
+                <th class="currency">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in expenses_by_category %}
+            <tr>
+                <td>{{ item.category__name|default:"Sem Categoria" }}</td>
+                <td class="currency">R$ {{ item.total|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nenhuma despesa registrada neste período.</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td>Total Despesas:</td>
+                <td class="currency">R$ {{ total_expenditure|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <tbody>
+            <tr class="result-row">
+                <td>Resultado Líquido do Exercício:</td>
+                <td class="currency">R$ {{ net_result|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
+
