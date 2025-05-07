@@ -53,6 +53,11 @@
           <span class="ml-3">Relatórios</span>
         </a>
       </li>
+      <li>
+        <a href="{% url 'core:church_config' %}" class="flex items-center p-2 {% if active_menu == 'church_config' %}bg-sky-600 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} rounded-md">
+          {% include 'icons/settings.html' %} <span class="ml-3">Config. Igreja</span>
+        </a>
+      </li>
       {% if user.role == 'admin' %}
         <li>
           <a href="{% url 'users:user_list' %}"

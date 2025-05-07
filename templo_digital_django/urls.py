@@ -7,6 +7,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("dashboard.urls", namespace="dashboard")), # Rota raiz para o dashboard
     # Rotas para todos os apps
+    path("configuracao/", include("core.urls", namespace="core")),
     path("igrejas/", include("churches.urls", namespace="churches")),
     path("membros/", include("members.urls", namespace="members")),
     path("financas/", include("finances.urls", namespace="finances")),

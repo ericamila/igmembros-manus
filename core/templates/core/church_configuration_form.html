@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Configuração da Igreja{% endblock %}
+{% block page_title %}Configuração da Igreja Sede{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Informações da Igreja Sede</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded-md {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="{{ form.church_name.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.church_name.label }}</label>
+                    {{ form.church_name }}
+                    {% if form.church_name.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.church_name.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.church_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <label for="{{ form.logo.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.logo.label }}</label>
+                    {% if config.logo %}
+                        <div class="mb-2">
+                            <img src="{{ config.logo.url }}" alt="Logo Atual" class="h-20 w-auto rounded-md border border-gray-300">
+                            <p class="mt-1 text-xs text-gray-500">Logo atual. Para alterar, selecione um novo arquivo abaixo.</p>
+                        </div>
+                    {% endif %}
+                    {{ form.logo }}
+                    {% if form.logo.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.logo.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.logo.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <label for="{{ form.president_pastor_name.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.president_pastor_name.label }}</label>
+                    {{ form.president_pastor_name }}
+                    {% if form.president_pastor_name.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.president_pastor_name.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.president_pastor_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <label for="{{ form.treasurer_name.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.treasurer_name.label }}</label>
+                    {{ form.treasurer_name }}
+                    {% if form.treasurer_name.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.treasurer_name.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.treasurer_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                    Salvar Configurações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

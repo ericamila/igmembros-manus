@@ -26,6 +26,8 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 import io
+from django.template.loader import render_to_string
+#from weasyprint import HTML
 
 @login_required
 def index(request):
@@ -579,8 +581,7 @@ class AccountabilityReportDeleteView(DeleteView):
         return super().form_valid(form)
 
 
-from django.template.loader import render_to_string
-from weasyprint import HTML
+
 
 @login_required
 def export_movimentacoes_mensais_pdf(request):
