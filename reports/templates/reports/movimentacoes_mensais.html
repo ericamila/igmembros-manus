@@ -9,11 +9,11 @@
 
 <div class="container mx-auto px-4">
     {# Breadcrumbs podem ser mantidos ou adaptados para Tailwind se necessário #}
-    {# <ol class="breadcrumb mb-4">
+    <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
         <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
         <li class="breadcrumb-item active">Movimentações Mensais</li>
-    </ol> #}
+    </ol> 
 
     <div class="bg-white shadow rounded-lg p-6 mb-6">
         <h2 class="text-lg font-semibold mb-4">Filtros</h2>
@@ -22,7 +22,7 @@
                 <div>
                     <label for="month" class="block text-sm font-medium text-gray-700">Mês:</label>
                     <select name="month" id="month" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md">
-                        {% for num, nome in available_months %}
+                        {% for num, nome in available_months.items  %}
                             <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ nome }}</option>
                         {% endfor %}
                     </select>

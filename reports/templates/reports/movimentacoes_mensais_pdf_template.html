@@ -2,47 +2,111 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Relatório de Movimentações - {{ month_name }} {{ selected_year }}</title>
+    <title>Relatório de Movimentações - {{ report_period }}</title>
     <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            @frame header_frame {
+                -pdf-frame-content: header_content;
+                left: 1.5cm; right: 1.5cm; top: 1cm; height: 3cm;
+            }
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 1.5cm; right: 1.5cm; bottom: 1cm; height: 1cm;
+            }
+        }
         body {
-            font-family: sans-serif;
-            margin: 20px;
+            font-family: "Helvetica", sans-serif;
+            font-size: 10pt;
+            color: #333;
+        }
+        #header_content {
+            text-align: center;
+        }
+        #header_content .logo {
+            max-width: 80px; /* Ajuste conforme necessário */
+            max-height: 80px; /* Ajuste conforme necessário */
+            margin-bottom: 5px;
+        }
+        #header_content .church-name {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 0;
+        }
+        #header_content .church-details {
+            font-size: 9pt;
+            margin: 2px 0;
+        }
+        #footer_content {
+            text-align: right;
+            font-size: 8pt;
         }
         h1, h2 {
             text-align: center;
             color: #333;
+            margin-top: 0.5cm;
+            margin-bottom: 0.5cm;
+        }
+        h1 {
+            font-size: 16pt;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #ccc;
+            padding: 6px;
             text-align: left;
+            vertical-align: top;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #e9e9e9;
             font-weight: bold;
         }
         .total-row td {
             font-weight: bold;
-            background-color: #f9f9f9;
+            background-color: #f2f2f2;
         }
         .balance-row td {
             font-weight: bold;
             font-size: 1.1em;
-            background-color: #e9e9e9;
+            background-color: #e0e0e0;
         }
         .currency {
             text-align: right;
         }
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <div id="header_content">
+        {% if church_config and church_config.logo %}
+            <img src="{{ church_config.logo.path }}" alt="Logo da Igreja" class="logo">
+        {% endif %}
+        {% if church_config and church_config.church_name %}
+            <p class="church-name">{{ church_config.church_name }}</p>
+        {% endif %}
+        {% if church_config %}
+            <p class="church-details">Pastor Presidente: {{ church_config.president_pastor_name|default:"-" }}</p>
+            <p class="church-details">Tesoureiro(a): {{ church_config.treasurer_name|default:"-" }}</p>
+        {% endif %}
+    </div>
+
+    <div id="footer_content">
+        Página <pdf:pagenumber /> de <pdf:pagecount />
+    </div>
+
     <h1>Relatório de Movimentações Mensais</h1>
-    <h2>{{ month_name }} de {{ selected_year }}</h2>
+    <h2>{{ report_period }}</h2>
 
     <h2>Receitas</h2>
     <table>
@@ -58,7 +122,7 @@
         <tbody>
             {% for income in incomes %}
             <tr>
-                <td>{{ income.date|date:"d/m/Y" }}</td>
+                <td class="text-center">{{ income.date|date:"d/m/Y" }}</td>
                 <td>{{ income.description }}</td>
                 <td>{{ income.category.name|default:"-" }}</td>
                 <td>{{ income.member.name|default:"-" }}</td>
@@ -66,7 +130,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5">Nenhuma receita registrada neste período.</td>
+                <td colspan="5" class="text-center">Nenhuma receita registrada neste período.</td>
             </tr>
             {% endfor %}
             <tr class="total-row">
@@ -89,14 +153,14 @@
         <tbody>
             {% for expense in expenses %}
             <tr>
-                <td>{{ expense.date|date:"d/m/Y" }}</td>
+                <td class="text-center">{{ expense.date|date:"d/m/Y" }}</td>
                 <td>{{ expense.description }}</td>
                 <td>{{ expense.category.name|default:"-" }}</td>
                 <td class="currency">R$ {{ expense.amount|floatformat:2 }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4">Nenhuma despesa registrada neste período.</td>
+                <td colspan="4" class="text-center">Nenhuma despesa registrada neste período.</td>
             </tr>
             {% endfor %}
             <tr class="total-row">

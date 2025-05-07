@@ -2,41 +2,121 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Relatório de Frequência - {{ class_date|date:"d/m/Y" }}</title>
+    <title>Relatório de Frequência - {{ report_period }}</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        h1, h2 { text-align: center; color: #333; }
-        h2 { margin-bottom: 30px; font-size: 1.2em; font-weight: normal; }
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            @frame header_frame {
+                -pdf-frame-content: header_content;
+                left: 1.5cm; right: 1.5cm; top: 1cm; height: 3cm;
+            }
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 1.5cm; right: 1.5cm; bottom: 1cm; height: 1cm;
+            }
+        }
+        body {
+            font-family: "Helvetica", sans-serif;
+            font-size: 10pt;
+            color: #333;
+        }
+        #header_content {
+            text-align: center;
+        }
+        #header_content .logo {
+            max-width: 80px;
+            max-height: 80px;
+            margin-bottom: 5px;
+        }
+        #header_content .church-name {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 0;
+        }
+        #header_content .church-details {
+            font-size: 9pt;
+            margin: 2px 0;
+        }
+        #footer_content {
+            text-align: right;
+            font-size: 8pt;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0.5cm;
+            margin-bottom: 0.5cm;
+        }
+        h1 {
+            font-size: 16pt;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #ccc;
+            padding: 6px;
             text-align: left;
+            vertical-align: top;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #e9e9e9;
             font-weight: bold;
         }
-        .center { text-align: center; }
-        .summary-table { width: auto; margin-left: auto; margin-right: auto; }
-        .summary-table td { border: none; padding: 5px 10px; }
-        .summary-table .label { font-weight: bold; text-align: right; }
+        .text-center {
+            text-align: center;
+        }
+        .summary-table {
+            width: auto;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            border: none; /* No border for the summary table itself */
+        }
+        .summary-table td {
+            border: none; /* No borders for cells in summary table */
+            padding: 4px 8px;
+        }
+        .summary-table .label {
+            font-weight: bold;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
+    <div id="header_content">
+        {% if church_config and church_config.logo %}
+            <img src="{{ church_config.logo.path }}" alt="Logo da Igreja" class="logo">
+        {% endif %}
+        {% if church_config and church_config.church_name %}
+            <p class="church-name">{{ church_config.church_name }}</p>
+        {% endif %}
+        {% if church_config %}
+            <p class="church-details">Pastor Presidente: {{ church_config.president_pastor_name|default:"-" }}</p>
+            <p class="church-details">Tesoureiro(a): {{ church_config.treasurer_name|default:"-" }}</p>
+        {% endif %}
+    </div>
+
+    <div id="footer_content">
+        Página <pdf:pagenumber /> de <pdf:pagecount />
+    </div>
+
     <h1>Relatório de Frequência</h1>
-    <h2>{{ selected_class_name }} - {{ class_date|date:"d/m/Y" }}</h2>
+    <h2>{{ report_period }}</h2>
 
     <table>
         <thead>
             <tr>
                 <th>Turma</th>
                 <th>Aluno</th>
-                <th class="center">Presente</th>
+                <th class="text-center">Status</th>
                 <th>Observação</th>
             </tr>
         </thead>
@@ -45,17 +125,18 @@
             <tr>
                 <td>{{ att.school_class.name }}</td>
                 <td>{{ att.student.member.name }}</td>
-                <td class="center">{% if att.present %}Sim{% else %}Não{% endif %}</td>
+                <td class="text-center">{% if att.present %}Presente{% else %}Ausente{% endif %}</td>
                 <td>{{ att.observation|default:"-" }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="center">Nenhum registro de frequência encontrado para esta data/turma.</td>
+                <td colspan="4" class="text-center">Nenhum registro de frequência encontrado.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
+    {% if attendances %}
     <table class="summary-table">
         <tr>
             <td class="label">Total Presentes:</td>
@@ -66,10 +147,11 @@
             <td>{{ total_absent }}</td>
         </tr>
         <tr>
-            <td class="label">Total Registros:</td>
-            <td>{{ total_records }}</td>
+            <td class="label">Total Registros na Lista:</td>
+            <td>{{ attendances|length }}</td>
         </tr>
     </table>
+    {% endif %}
 
 </body>
 </html>

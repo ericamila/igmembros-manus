@@ -16,7 +16,7 @@ urlpatterns = [
     path("balance/", views.relatorio_balanco, name="balanco"),
     path("balance/export/xlsx/", views.export_balanco_xlsx, name="export_balanco_xlsx"),
     path("balance/export/pdf/", views.export_balanco_pdf, name="export_balanco_pdf"),
-    path("financeiro-categorias/", views.relatorio_financeiro_categorias, name="financeiro_categorias"), # Added Categoria report URL
+    path("financeiro-categorias/", views.relatorio_financeiro_categorias, name="financeiro_categorias"),
 
     # Sunday School Reports
     path("school/alunos-por-turma/", views.relatorio_alunos_por_turma, name="alunos_por_turma"),
@@ -30,8 +30,8 @@ urlpatterns = [
     path("membros/estatisticas/", views.relatorio_membros_estatisticas, name="membros_estatisticas"),
     path("membros/estatisticas/export/xlsx/", views.export_membros_estatisticas_xlsx, name="export_membros_estatisticas_xlsx"),
     path("membros/estatisticas/export/pdf/", views.export_membros_estatisticas_pdf, name="export_membros_estatisticas_pdf"),
-    path("members/aniversariantes/", views.relatorio_aniversariantes, name="aniversariantes"),
-    path("members/contribuicoes-anuais/", views.relatorio_contribuicoes_anuais, name="contribuicoes_anuais"),
+    path("membros/aniversariantes/", views.relatorio_aniversariantes, name="aniversariantes"),
+    path("membros/contribuicoes-anuais/", views.relatorio_contribuicoes_anuais, name="contribuicoes_anuais"),
 
     # Accountability Reports 
     path("prestacao-contas/", views.AccountabilityReportListView.as_view(), name="accountability_list"),

@@ -27,7 +27,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="month" class="form-label">Mês:</label>
                             <select name="month" id="month" class="form-select">
-                                {% for num, nome in available_months %}
+                                {% for num, nome in available_months.items %}
                                     <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ nome }}</option>
                                 {% endfor %}
                             </select>

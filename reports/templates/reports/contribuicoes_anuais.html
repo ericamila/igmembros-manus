@@ -9,20 +9,20 @@
 <div class="container-fluid px-4">
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Reports</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Relatórios</a></li>
         <li class="breadcrumb-item active">Relatório de Contribuições Anuais</li>
     </ol>
 
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-filter me-1"></i>
-            Filters
+            Filtros
         </div>
         <div class="card-body">
             <form method="get">
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="year" class="form-label">Year:</label>
+                        <label for="year" class="form-label">Ano:</label>
                         <select name="year" id="year" class="form-select">
                             {% for y in available_years %}
                                 {# Handle potential datetime objects from TruncYear #}
@@ -31,10 +31,10 @@
                         </select>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="member" class="form-label">Member (Optional):</label>
+                        <label for="member" class="form-label">Membro (Optional):</label>
                         <select name="member" id="member" class="form-select">
                             <option value="">Todos os membros</option>
-                            {% for m in all_members %}
+                            {% for m in all_members_for_filter %}
                                 <option value="{{ m.id }}" {% if m.id|stringformat:"s" == selected_member %}selected{% endif %}>{{ m.name }}</option>
                             {% endfor %}
                         </select>
@@ -50,7 +50,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-chart-bar me-1"></i>
-            Contributions for {{ selected_year }}{% if selected_member_name %} for {{ selected_member_name }}{% endif %}
+            Contribuições em {{ selected_year }}{% if selected_member_name %} por {{ selected_member_name }}{% endif %}
         </div>
         <div class="card-body">
             {% if contributions %}
@@ -58,22 +58,22 @@
                     <table class="table table-bordered table-striped" id="contributionsTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>Member</th>
-                                <th>Total Contributed (R$)</th>
+                                <th>Membro</th>
+                                <th>Total Contribuído (R$)</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for contribution in contributions %}
                             <tr>
-                                <td>{{ contribution.member__name }}</td>
-                                <td class="text-end">{{ contribution.total_contribution|intcomma }}</td>
+                                <td>{{ contribution.member_name }}</td>
+                                <td class="text-end">{{ contribution.total_annual|intcomma }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                         {% if total_overall_contribution is not None %}
                         <tfoot>
                             <tr>
-                                <th class="text-end">Overall Total:</th>
+                                <th class="text-end">Total Geral:</th>
                                 <th class="text-end">{{ total_overall_contribution|intcomma }}</th>
                             </tr>
                         </tfoot>
@@ -81,7 +81,7 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-center">No contributions found for the selected filters.</p>
+                <p class="text-center">Contribuições não encontradas para os filtros selecionados.</p>
             {% endif %}
         </div>
     </div>
