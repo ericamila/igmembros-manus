@@ -109,7 +109,7 @@ if DATABASE_URL:
     # Production/Staging (e.g., Vercel): Use PostgreSQL via DATABASE_URL
     # dj_database_url will parse the URL and handle special characters
     DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=False) # Set ssl_require based on Supabase needs
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=True) # Set ssl_require based on Supabase needs
     }
     # Ensure Supabase Pooler compatibility if needed (optional)
     # DATABASES['default']['OPTIONS'] = {'options': '-c statement_timeout=15000'}
