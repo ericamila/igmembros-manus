@@ -29,7 +29,7 @@ from openpyxl.styles import Font, Alignment
 from openpyxl.drawing.image import Image as OpenpyxlImage # For adding images to Excel
 import io
 from django.template.loader import render_to_string
-from weasyprint import HTML, CSS
+#from weasyprint import HTML, CSS
 from django.conf import settings # For MEDIA_ROOT
 import os # For path joining
 
@@ -305,10 +305,10 @@ def export_movimentacoes_mensais_pdf(request):
     # If logo path is local, you might need to embed it as base64 or ensure WeasyPrint can access it.
     # We'll assume the template handles displaying the logo, possibly using church_config.logo.url
 
-    html = HTML(string=html_string, base_url=request.build_absolute_uri("/")) # Helps resolve relative URLs for CSS/Images
-    pdf_file = html.write_pdf()
+    #html = HTML(string=html_string, base_url=request.build_absolute_uri("/")) # Helps resolve relative URLs for CSS/Images
+    #pdf_file = html.write_pdf()
 
-    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response = HttpResponse(None, content_type="application/pdf")
     response["Content-Disposition"] = f"attachment; filename=movimentacoes_{first_day_month.strftime("%Y_%m")}.pdf"
     return response
 
@@ -489,9 +489,9 @@ def export_dre_pdf(request):
         "church_config": church_config,
     }
     html_string = render_to_string("reports/dre_pdf_template.html", context)
-    html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
-    pdf_file = html.write_pdf()
-    response = HttpResponse(pdf_file, content_type="application/pdf")
+    #html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
+    #pdf_file = html.write_pdf()
+    response = HttpResponse(None, content_type="application/pdf")
     response["Content-Disposition"] = f"attachment; filename=DRE_{year_param}.pdf"
     return response
 
@@ -622,9 +622,9 @@ def export_balanco_pdf(request):
         "church_config": church_config,
     }
     html_string = render_to_string("reports/balanco_pdf_template.html", context)
-    html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
-    pdf_file = html.write_pdf()
-    response = HttpResponse(pdf_file, content_type="application/pdf")
+    #html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
+    #pdf_file = html.write_pdf()
+    response = HttpResponse(None, content_type="application/pdf")
     response["Content-Disposition"] = f"attachment; filename=Balanco_{end_date.strftime("%Y%m%d")}.pdf"
     return response
 
@@ -712,9 +712,9 @@ def export_alunos_por_turma_pdf(request):
         "report_period": "Geral" # Or specific if filtered
     }
     html_string = render_to_string("reports/alunos_por_turma_pdf_template.html", context)
-    html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
-    pdf_file = html.write_pdf()
-    response = HttpResponse(pdf_file, content_type="application/pdf")
+    #html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
+    #pdf_file = html.write_pdf()
+    response = HttpResponse(None, content_type="application/pdf")
     response["Content-Disposition"] = "attachment; filename=alunos_por_turma.pdf"
     return response
 
@@ -863,9 +863,9 @@ def export_frequencia_pdf(request):
         "church_config": church_config,
     }
     html_string = render_to_string("reports/frequencia_pdf_template.html", context)
-    html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
-    pdf_file = html.write_pdf()
-    response = HttpResponse(pdf_file, content_type="application/pdf")
+    #html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
+    #pdf_file = html.write_pdf()
+    response = HttpResponse(None, content_type="application/pdf")
     response["Content-Disposition"] = f"attachment; filename=frequencia_{class_date.strftime("%Y%m%d")}.pdf"
     return response
 
@@ -999,9 +999,9 @@ def export_membros_estatisticas_pdf(request):
         "report_period": "Geral"
     }
     html_string = render_to_string("reports/membros_estatisticas_pdf_template.html", context)
-    html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
-    pdf_file = html.write_pdf()
-    response = HttpResponse(pdf_file, content_type="application/pdf")
+    #html = HTML(string=html_string, base_url=request.build_absolute_uri("/"))
+    #pdf_file = html.write_pdf()
+    response = HttpResponse(None, content_type="application/pdf")
     response["Content-Disposition"] = "attachment; filename=membros_estatisticas.pdf"
     return response
 
@@ -1076,7 +1076,8 @@ def relatorio_contribuicoes_anuais(request):
         "available_years": filters["available_years"],
         "months_header": [m[1][:3] for m in filters["available_months"].items()], # Jan, Fev, Mar...
         "church_config": filters["church_config"],
-        "total_overall_contribution": total_overall_contribution
+        "total_overall_contribution": total_overall_contribution,
+        "grand_total_annual": sum([item["total_annual"] for item in contributions_data]), # VERIFICAR
     }
     return render(request, "reports/contribuicoes_anuais.html", context)
 
@@ -1090,7 +1091,7 @@ class AccountabilityReportListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return AccountabilityReport.objects.order_by("-month_year")
+        return AccountabilityReport.objects.order_by("-year", "-month")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
