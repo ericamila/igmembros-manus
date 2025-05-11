@@ -1,0 +1,93 @@
+# Arquivos e diretórios do Git
+.git
+.gitignore
+
+# Arquivos de ambiente virtual
+venv/
+.venv/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Arquivos de configuração local (se houver)
+.env
+
+# Arquivos de banco de dados SQLite (se usado para desenvolvimento)
+*.sqlite3
+
+# Arquivos de mídia (se não forem necessários no build)
+media/
+
+# Arquivos de teste
+tests/
+
+# Arquivos de documentação (se não forem necessários no build)
+docs/
+
+# Arquivos de IDE/editor
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de log
+*.log
+
+# Arquivos de build/distribuição (se não forem necessários no build)
+build/
+dist/
+*.egg-info/
+
+# Arquivos de configuração do Docker (se não forem necessários dentro da imagem)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Arquivos de teste e cobertura
+.coverage
+htmlcov/
+
+# Arquivos de backup
+*.bak
+*~
+
+# Arquivos específicos do macOS
+.AppleDouble
+.LSOverride
+
+# Arquivos de configuração do editor
+.editorconfig
+
+# Arquivos de ambiente virtual (outros nomes comuns)
+env/
+venv/
+
+# Arquivos de cache do Mypy
+.mypy_cache/
+
+# Arquivos de cache do pytest
+.pytest_cache/
+
+# Arquivos de configuração do Jupyter Notebook/Lab (se aplicável)
+.ipynb_checkpoints/
+
+# Arquivos de configuração do VSCode (se aplicável)
+.vscode/
+
+# Arquivos de configuração do PyCharm (se aplicável)
+.idea/
+
+# Arquivos de configuração do Sublime Text (se aplicável)
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de configuração do Vim (se aplicável)
+*.swp
+*.swo
+*~

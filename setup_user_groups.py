@@ -60,10 +60,7 @@ def setup_groups_and_permissions():
                 "event": "all_crud", 
                 "eventsubscription": "all_crud"
             },
-            "finances": {
-                "category": ["view"], 
-                "transaction": ["view"]
-            },
+            # Removido acesso ao módulo de finanças
             "core": {"churchconfiguration": ["view"]}
         },
         "Tesoureiro": {

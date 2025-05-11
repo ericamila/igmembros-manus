@@ -2,8 +2,8 @@
 {% load static %}
 {% load humanize %}
 
-{% block title %}Relatório de Contribuições Anuais - {{ year_selected }}{% endblock %}
-{% block page_title %}Relatório de Contribuições Anuais - {{ year_selected }}{% endblock %}
+{% block title %}Relatório de Contribuições Anuais - {{ selected_year }}{% endblock %}
+{% block page_title %}Relatório de Contribuições Anuais - {{ selected_year }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid px-4">
@@ -25,22 +25,21 @@
                         <label for="year" class="form-label">Ano:</label>
                         <select name="year" id="year" class="form-select">
                             {% for y in available_years %}
-                                {# Handle potential datetime objects from TruncYear #}
-                                <option value="{{ y.year|default:y }}" {% if y.year|default:y == selected_year %}selected{% endif %}>{{ y.year|default:y }}</option>
+                                <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="member" class="form-label">Membro (Optional):</label>
+                        <label for="member" class="form-label">Membro (Opcional):</label>
                         <select name="member" id="member" class="form-select">
-                            <option value="">Todos os membros</option>
+                            <option value="all" {% if selected_member_id == "all" or not selected_member_id %}selected{% endif %}>Todos os membros ativos</option>
                             {% for m in all_members_for_filter %}
-                                <option value="{{ m.id }}" {% if m.id|stringformat:"s" == selected_member %}selected{% endif %}>{{ m.name }}</option>
+                                <option value="{{ m.id }}" {% if m.id|stringformat:"s" == selected_member_id %}selected{% endif %}>{{ m.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-4 d-flex align-items-end mb-3">
-                        <button type="submit" class="btn btn-primary">Filtro</button>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
                     </div>
                 </div>
             </form>
@@ -50,38 +49,51 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-chart-bar me-1"></i>
-            Contribuições em {{ selected_year }}{% if selected_member_name %} por {{ selected_member_name }}{% endif %}
+            Contribuições (Dízimos) de {{ selected_year }} {% if selected_member_name != "Todos" %} para {{ selected_member_name }}{% endif %}
         </div>
         <div class="card-body">
-            {% if contributions %}
+            {% if contributions_data %}
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="contributionsTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
                                 <th>Membro</th>
-                                <th>Total Contribuído (R$)</th>
+                                {% for month_header in months_header %}
+                                    <th class="text-center">{{ month_header }}</th>
+                                {% endfor %}
+                                <th class="text-end">Total Anual (R$)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for contribution in contributions %}
+                            {% for item in contributions_data %}
                             <tr>
-                                <td>{{ contribution.member_name }}</td>
-                                <td class="text-end">{{ contribution.total_annual|intcomma }}</td>
+                                <td>{{ item.member_name }}</td>
+                                {% for monthly_value in item.monthly_values %}
+                                    <td class="text-end">{{ monthly_value|intcomma }}</td>
+                                {% endfor %}
+                                <td class="text-end fw-bold">{{ item.total_annual|intcomma }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
-                        {% if total_overall_contribution is not None %}
+                        {% if contributions_data|length > 1 or selected_member_id == "all" %}
                         <tfoot>
                             <tr>
-                                <th class="text-end">Total Geral:</th>
-                                <th class="text-end">{{ total_overall_contribution|intcomma }}</th>
+                                <th class="text-end" colspan="{{ months_header|length|add:1 }}">Total Geral Anual (Dízimos):</th>
+                                <th class="text-end fw-bold">
+                                    {% with total_geral=0 %}
+                                        {% for item in contributions_data %}
+                                            {% PURE_PYTHON total_geral = total_geral + item.total_annual %}
+                                        {% endfor %}
+                                        {{ total_geral|intcomma }}
+                                    {% endwith %}
+                                </th>
                             </tr>
                         </tfoot>
                         {% endif %}
                     </table>
                 </div>
             {% else %}
-                <p class="text-center">Contribuições não encontradas para os filtros selecionados.</p>
+                <p class="text-center">Nenhuma contribuição (dízimo) encontrada para os filtros selecionados.</p>
             {% endif %}
         </div>
     </div>
@@ -90,9 +102,8 @@
 
 {% block extra_js %}
 <script>
-    // Add any specific JS for this page if needed, e.g., for DataTables
     // $(document).ready(function() {
-    //     $('#contributionsTable').DataTable();
+    //     $('#contributionsTable').DataTable(); // Example for DataTables
     // });
 </script>
 {% endblock %}
