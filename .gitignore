@@ -14,7 +14,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# Environments 
+.env 
+.venv 
+env/ 
+venv/ 
+ENV/ 
+env.bak/ 
+venv.bak/ 
 .env*
 
 # vercel
@@ -29,7 +36,30 @@ next-env.d.ts
 *.pot
 *.pyc
 __pycache__/
-local_settings.py
 
 db.sqlite3
 media
+
+# Python # 
+*.py[cod] 
+*$py.class 
+
+# Distribution / packaging 
+.Python build/ 
+develop-eggs/ 
+dist/ 
+downloads/ 
+eggs/ 
+.eggs/ 
+lib/ 
+lib64/ 
+parts/ 
+sdist/ 
+var/ 
+wheels/ 
+*.whl
+*.egg-info/ 
+.installed.cfg 
+*.egg 
+*.manifest 
+*.spec 

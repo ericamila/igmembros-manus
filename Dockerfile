@@ -1,5 +1,5 @@
 # Use uma imagem Python oficial como imagem pai
-FROM python:3.13-slim-bullseye
+FROM python:3.13-slim-bookworm
 
 # Define variáveis de ambiente
 ENV PYTHONDONTWRITEBYTECODE 1
