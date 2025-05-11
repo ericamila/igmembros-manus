@@ -25,3 +25,47 @@ python-dotenv==1.1.0
 dj-database-url
 
 openpyxl
+
+
+# Essenciais para Django
+Django==5.2
+
+# Essenciais para Tailwind CSS (assumindo que o app 'theme' usa esta biblioteca)
+django-tailwind
+
+# Para manipulação de imagens/arquivos (ex: comprovantes, fotos de perfil)
+Pillow==11.2.1
+
+# Para formatação de números nos templates (ex: valores monetários)
+# django.contrib.humanize já vem com o Django
+
+# Para suporte a Timezone (usado pelo Django)
+tzdata==2025.2
+
+# Whitenoise para servir arquivos estáticos em produção (recomendado)
+whitenoise==6.9.0
+psycopg2-binary==2.9.10
+python-dateutil==2.9.0.post0
+python-dotenv==1.1.0
+dj-database-url==2.3.0
+
+asgiref==3.8.1
+Brotli==1.1.0
+cffi==1.17.1
+cssselect2==0.8.0
+et_xmlfile==2.0.0
+fonttools==4.57.0
+gunicorn==23.0.0
+openpyxl==3.1.5
+pycparser==2.22
+pydyf==0.11.0
+pyphen==0.17.2
+pytz==2025.2
+six==1.17.0
+sqlparse==0.5.3
+tinycss2==1.4.0
+tinyhtml5==2.0.0
+typing_extensions==4.13.2
+webencodings==0.5.1
+zopfli==0.2.3.post1
+WeasyPrint==65.1
