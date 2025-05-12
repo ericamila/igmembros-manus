@@ -49,7 +49,8 @@ def index(request):
     # Atividades Recentes (CORRIGIDO)
     # Usar datetime aware (sete_dias_atras) para comparar com created_at/updated_at
     recent_members = Member.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("new_member", output_field=models.CharField()))
-    recent_donations = Income.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("donation", output_field=models.CharField()))
+    recent_incomes = Income.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("income", output_field=models.CharField()))
+    recent_expenses = Expense.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("expense", output_field=models.CharField()))
     recent_events_created = Event.objects.filter(created_at__gte=seven_days_ago).annotate(activity_type=F("created_at"), type=models.Value("event_created", output_field=models.CharField()))
     recent_events_updated = Event.objects.filter(updated_at__gte=seven_days_ago, updated_at__gt=F("created_at")).annotate(activity_type=F("updated_at"), type=models.Value("event_updated", output_field=models.CharField()))
     # Aniversários de hoje (para Atividade Recente) - Usar agora para activity_type
@@ -57,10 +58,11 @@ def index(request):
 
     # Combinar e ordenar atividades
     all_activities = sorted(
-        chain(recent_members, recent_donations, recent_events_created, recent_events_updated, birthdays_today),
+        chain(recent_members, recent_incomes, recent_expenses, recent_events_created, recent_events_updated, birthdays_today),
         key=attrgetter("activity_type"),
         reverse=True
     )[:5] # Limitar a 5 atividades recentes
+    print("Atividades recentes:", all_activities)
 
     # Dados para o gráfico de membros por igreja
     members_per_church_qs = Church.objects.annotate(num_members=Count("members")).order_by("-num_members")

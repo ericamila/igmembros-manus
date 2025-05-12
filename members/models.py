@@ -12,7 +12,6 @@ class Member(models.Model):
     GENDER_CHOICES = [
         ("M", "Masculino"),
         ("F", "Feminino"),
-        ("O", "Outro"),
     ]
     MARITAL_STATUS_CHOICES = [
         ("solteiro", "Solteiro(a)"),

@@ -6,36 +6,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-      {% block title %}
-        Templo Digital
-      {% endblock %}
+      {% block title %}Templo Digital{% endblock %}
     </title>
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
     {% tailwind_css %}
     <script src="//unpkg.com/alpinejs" defer></script>
     {% block extra_head %}
-
     {% endblock %}
-    <style>
-      [x-cloak] { display: none !important; }
-    </style>
-  </head>
-  <body class="bg-gray-100 ml-64" x-data="{ isSidebarOpen: false }">
-    <div class="flex min-h-screen"> 
-      
-      {% if user.is_authenticated %}
-      <!-- Overlay for mobile sidebar -->
-      <div x-show="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-black/50 z-20 md:hidden" x-cloak></div> 
 
+  </head>
+  <body class="bg-gray-100 ml-64">
+    <div class="flex min-h-screen">   
+     
       <!-- Sidebar -->
-      <aside 
-        class="w-64 bg-gray-800 text-white flex flex-col fixed inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
-        :class="{ 'translate-x-0': isSidebarOpen }"
-        x-cloak
-      >
-    
+      <aside class="w-64 bg-gray-800 text-white flex flex-col fixed inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
       {% include "parts/sidebar.html" %}
-        
         <div class="p-4 border-t border-gray-700">
           <a href="{% url 'users:profile' %}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md mb-2">
             {% include 'icons/profile.html' %} <span class="ml-3">Meu Perfil</span>
@@ -48,18 +33,13 @@
           </form>
         </div>
       </aside>
-      {% endif %}
 
       <!-- Main Content Area -->
-      <div class="flex-1 flex flex-col {% if user.is_authenticated %}md:ml-64{% endif %}"> 
-          {% if user.is_authenticated %}
+      <div class="flex-1 flex flex-col md:ml-64"> 
+
           <!-- Header -->
           <header class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center">
-              <!-- Hamburger Menu Button -->
-              <button @click="isSidebarOpen = !isSidebarOpen" class="md:hidden mr-4 text-gray-600 hover:text-gray-800">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-              </button>
               <h1 class="text-xl md:text-2xl font-semibold text-gray-800">
                 {% block page_title %}Dashboard{% endblock %}
               </h1>
@@ -83,7 +63,7 @@
               </div>
             </div>
           </header>
-          {% endif %}
+          
           
           <!-- Page Content -->
           <main class="flex-grow p-6">
@@ -92,12 +72,11 @@
             {% endblock %}
           </main>
 
-          {% if user.is_authenticated %}
           <!-- Footer -->
           <footer class="bg-white text-center p-4 text-sm text-gray-500 mt-auto">
             <p>Templo Digital ©{% now 'Y' %} - Sistema de Gestão para Igrejas</p>
           </footer>
-          {% endif %}
+          
       </div> 
       
     </div> 
