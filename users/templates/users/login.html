@@ -1,18 +1,18 @@
-{% extends 'core/base.html' %}
+{% extends 'users/base.html' %}
 {% load static %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <div class="text-center">
-            <h1 class="text-3xl font-extrabold text-gray-900">Templo Digital</h1>
-            <p class="mt-2 text-sm text-gray-600">Entre com suas credenciais para acessar o sistema</p>
+<div class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+        <div class="text-center mb-2">
+            <h1>Templo Digital</h1>
+            <p class="mt-2">Entre com suas credenciais para acessar o sistema.</p>
         </div>
 
         {% if form.errors %}
-        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+        <div class="p-4 mb-4 text-sm bg-red-100 rounded-lg">
             <p>Seu nome de usuário e senha não correspondem. Por favor, tente novamente.</p>
         </div>
         {% endif %}
@@ -27,13 +27,13 @@
         </div>
         {% endif %}
 
-        <form class="mt-8 space-y-6" method="post">
+        <form class="p-2 space-y-6" method="post">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
             
-            <div class="rounded-md shadow-sm -space-y-px">
-                <div>
-                    <label for="{{ form.username.id_for_label }}" class="sr-only">Nome de usuário</label>
+            <div class="rounded-md shadow-sm -space-y-px p-4">
+                <div class="mb-4">
+                    <label for="{{ form.username.id_for_label }}" class="sr-only">Usuário</label>
                     {{ form.username }}
                 </div>
                 <div class="mt-4">
@@ -45,7 +45,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                    <label for="remember-me" class="ml-4 block text-sm">
                         Lembrar-me
                     </label>
                 </div>

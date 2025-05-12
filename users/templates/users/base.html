@@ -1,0 +1,28 @@
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Templo Digital
+      {% endblock %}
+    </title>
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
+    {% tailwind_css %}
+  </head>
+  
+  <body class="bg-gray-100">
+      <!-- Main Content Area -->
+      <div class="flex flex-col">
+        <!-- Page Content -->
+        <main class="flex-grow">
+          {% block content %}
+            <p class="text-gray-700">Conteúdo principal da página.</p>
+          {% endblock %}
+        </main>
+      </div>
+  </body>
+</html>
