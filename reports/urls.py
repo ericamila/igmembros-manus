@@ -17,6 +17,8 @@ urlpatterns = [
     path("balance/export/xlsx/", views.export_balanco_xlsx, name="export_balanco_xlsx"),
     path("balance/export/pdf/", views.export_balanco_pdf, name="export_balanco_pdf"),
     path("financeiro-categorias/", views.relatorio_financeiro_categorias, name="financeiro_categorias"),
+#    path("financeiro-categorias/export/xlsx/", views.export_financeiro_categorias_xlsx, name="export_financeiro_categorias_xlsx"),
+#    path("financeiro-categorias/export/pdf/", views.export_financeiro_categorias_pdf, name="export_financeiro_categorias_pdf"),
 
     # Sunday School Reports
     path("school/alunos-por-turma/", views.relatorio_alunos_por_turma, name="alunos_por_turma"),
@@ -31,7 +33,11 @@ urlpatterns = [
     path("membros/estatisticas/export/xlsx/", views.export_membros_estatisticas_xlsx, name="export_membros_estatisticas_xlsx"),
     path("membros/estatisticas/export/pdf/", views.export_membros_estatisticas_pdf, name="export_membros_estatisticas_pdf"),
     path("membros/aniversariantes/", views.relatorio_aniversariantes, name="aniversariantes"),
+#    path("membros/aniversariantes/export/xlsx/", views.export_aniversariantes_xlsx, name="export_aniversariantes_xlsx"),
+#    path("membros/aniversariantes/export/pdf/", views.export_aniversariantes_pdf, name="export_aniversariantes_pdf"),
     path("membros/contribuicoes-anuais/", views.relatorio_contribuicoes_anuais, name="contribuicoes_anuais"),
+#    path("membros/contribuicoes-anuais/export/xlsx/", views.export_contribuicoes_anuais_xlsx, name="export_contribuicoes_anuais_xlsx"),
+#    path("membros/contribuicoes-anuais/export/pdf/", views.export_contribuicoes_anuais_pdf, name="export_contribuicoes_anuais_pdf"),
 
     # Accountability Reports 
     path("prestacao-contas/", views.AccountabilityReportListView.as_view(), name="accountability_list"),

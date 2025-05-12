@@ -29,7 +29,9 @@ from openpyxl.styles import Font, Alignment
 from openpyxl.drawing.image import Image as OpenpyxlImage # For adding images to Excel
 import io
 from django.template.loader import render_to_string
-#from weasyprint import HTML, CSS
+#from fpdf import FPDF
+from django.utils.dateformat import DateFormat
+from django.utils.formats import number_format
 from django.conf import settings # For MEDIA_ROOT
 import os # For path joining
 
@@ -1041,8 +1043,6 @@ def relatorio_contribuicoes_anuais(request):
         members_to_query = all_members # All active members if "all" or no specific member
         member_param = "all" # Ensure it's set for template logic
 
-    print(f"Member Param: {member_param}, Members to Query: {members_to_query}")
-
     for member_obj in members_to_query:
         monthly_contributions = []
         total_annual = Decimal("0.00")
@@ -1053,7 +1053,7 @@ def relatorio_contribuicoes_anuais(request):
                 member=member_obj,
                 date__gte=start_of_month,
                 date__lte=end_of_month,
-                category__name__iexact="Dízimo"  # Assuming category name for tithe
+                category__name__iexact="Dízimos"  # Assuming category name for tithe
             ).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
             monthly_contributions.append(month_sum)
             total_annual += month_sum
@@ -1063,8 +1063,7 @@ def relatorio_contribuicoes_anuais(request):
             "total_annual": total_annual
         })
     
-    total_overall_contribution = sum([item["total_annual"] for item in contributions_data])
-    
+    total_overall_contribution = sum([item["total_annual"] for item in contributions_data])  
 
     context = {
         "active_menu": "reports",
@@ -1076,8 +1075,7 @@ def relatorio_contribuicoes_anuais(request):
         "available_years": filters["available_years"],
         "months_header": [m[1][:3] for m in filters["available_months"].items()], # Jan, Fev, Mar...
         "church_config": filters["church_config"],
-        "total_overall_contribution": total_overall_contribution,
-        "grand_total_annual": sum([item["total_annual"] for item in contributions_data]), # VERIFICAR
+        "total_overall_contribution": total_overall_contribution
     }
     return render(request, "reports/contribuicoes_anuais.html", context)
 
