@@ -33,6 +33,7 @@ class Member(models.Model):
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True, verbose_name="Sexo")
     marital_status = models.CharField(max_length=15, choices=MARITAL_STATUS_CHOICES, null=True, blank=True, verbose_name="Estado Civil")
     address = models.TextField(blank=True, null=True, verbose_name="Endereço")
+    cpf = models.CharField(max_length=14, blank=True, null=True, verbose_name="CPF")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone")
     email = models.EmailField(blank=True, null=True, verbose_name="Email")
     baptism_date = models.DateField(null=True, blank=True, verbose_name="Data de Batismo")
@@ -46,6 +47,9 @@ class Member(models.Model):
     notes = models.TextField(blank=True, null=True, verbose_name="Observações")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Criado em")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Atualizado em")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="created_members", verbose_name="Criado por")
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="updated_members", verbose_name="Atualizado por")
+    observations = models.TextField(blank=True, null=True, verbose_name="Observações")
 
     def __str__(self):
         return self.name

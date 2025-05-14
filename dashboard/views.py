@@ -62,7 +62,6 @@ def index(request):
         key=attrgetter("activity_type"),
         reverse=True
     )[:5] # Limitar a 5 atividades recentes
-    print("Atividades recentes:", all_activities)
 
     # Dados para o gráfico de membros por igreja
     members_per_church_qs = Church.objects.annotate(num_members=Count("members")).order_by("-num_members")
