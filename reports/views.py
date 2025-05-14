@@ -46,16 +46,18 @@ class PDFReport(FPDF):
         # Ensure the font path is correct for your environment (Vercel might need specific handling or font availability)
         # Using a common font like DejaVuSans is a good practice if available.
         # If /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf is not available in Vercel, this will fail.
-        # Consider bundling the font or using a path that Vercel provides.
+        # Consider bundling the font or using a path that Verce        
         try:
-            self.add_font('DejaVu', '', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', uni=True)
-            self.add_font('DejaVu', 'B', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', uni=True)
-            self.set_font('DejaVu', '', 10)
-        except RuntimeError as e:
-            print(f"FPDF Font Error: {e}. Falling back to helvetica.")
-            # Fallback font if DejaVu is not found (limited character support)
-            self.set_font('Helvetica', '', 10)
-        self.alias_nb_pages()
+        # Attempt to add and use DejaVu font
+            self.add_font("DejaVu", "", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", uni=True)
+            self.add_font("DejaVu", "B", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", uni=True)
+            self.set_font("DejaVu", "", 10)
+        except (RuntimeError, FileNotFoundError) as e: # Catch both RuntimeError and FileNotFoundError
+            print(f"FPDF Font Error (DejaVu not found or load failed): {e}. Falling back to Helvetica.")
+            # Fallback to a standard FPDF font if DejaVu is not available or fails to load
+            self.set_font("Helvetica", "", 10)
+            # If you need a bold version for Helvetica, you can set it when needed, e.g., self.set_font("Helvetica", "B", 10)
+            # FPDF's standard fonts (Helvetica, Times, Courier) don't require add_font for bold/italic styles, just set_font.ef    
 
     def header(self):
         if not self.church_config:
@@ -245,6 +247,7 @@ def export_movimentacoes_mensais_xlsx(request):
         cell.font = Font(size=10)
         cell.alignment = Alignment(horizontal="center")
         current_row += 1
+    title_cell = ws.cell(row=current_row, column=2)
     title_cell.alignment = Alignment(horizontal="center")
     ws.row_dimensions[current_row].height = 20
     current_row += 2
